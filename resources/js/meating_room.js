@@ -1,0 +1,20 @@
+import './bootstrap';
+import 'animate.css';
+import jQuery from 'jquery';
+import './meatingRoom/meatingRoom';
+import "./meatingRoom/peerConnections";
+import { create_connection_room } from "./meatingRoom/peerConnections";
+import { add_member_to_list } from "./meatingRoom/meatingRoom";
+import { file_text_front_div } from "./meatingRoom/meatingRoom";
+import {announcement_front_div} from './meatingRoom/meatingRoom';
+import { Peer } from "peerjs";
+import Alpine from 'alpinejs';
+window.Alpine = Alpine;
+window.$ = jQuery;
+window.create_connection_room = create_connection_room;
+window.add_member_to_list = add_member_to_list;
+window.file_text_front_div = file_text_front_div;
+window.announcement_front_div = announcement_front_div;
+window.Peer = Peer;
+Alpine.start();
+

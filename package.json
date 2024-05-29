@@ -1,0 +1,24 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "@popperjs/core": "^2.11.6",
+        "axios": "^1.6.4",
+        "bootstrap": "^5.3.3",
+        "laravel-vite-plugin": "^1.0",
+        "sass": "^1.77.2",
+        "vite": "^5.0"
+    },
+    "dependencies": {
+        "alpinejs": "^3.13.7",
+        "animate.css": "^4.1.1",
+        "bootstrap-icons": "^1.11.3",
+        "jquery": "^3.7.1",
+        "peerjs": "^1.5.4",
+        "sass-loader": "^14.2.1"
+    }
+}

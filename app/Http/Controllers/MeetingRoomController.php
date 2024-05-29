@@ -1,0 +1,297 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Rooms;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+class MeetingRoomController extends Controller
+{
+    public function create_page(){
+        $no_rooms = $this->have_Rooms(auth()->id());
+        if ($no_rooms === true) {
+            $uuid = Str::uuid();
+            return view('meetingRoom.create',["roomID" => $uuid]);
+        }else{
+            return view('meetingRoom.create',["roomID" => $no_rooms[0]->room_uuid,'room_status'=>$no_rooms[0]->type]);
+        }
+    }
+    public function create_room(Request $request){
+        $no_rooms = $this->have_Rooms(auth()->id());
+        if ($no_rooms === true) {
+            $new_rooms = new Rooms;
+            $new_rooms->creator_id = auth()->id();
+            $new_rooms->room_name = $request->room_name;
+            $new_rooms->room_uuid = $request->room_uuid;
+            $new_rooms->type = $request->type_Room;
+            $new_rooms->save();
+            return redirect('/mR/joinTo/'.$request->room_uuid)->with(['message'=>[false,'Click Join Room, if u dont want to change your name',$request->room_uuid]]);
+        }else{
+            if ($no_rooms[0]->creator_id == auth()->id()) {
+                if (!($no_rooms[0]->type === $request->type_Room)) {
+                    Rooms::where('room_uuid',$no_rooms[0]->room_uuid)->update([
+                        'type'=>$request->type_Room
+                    ]);
+                }
+                return redirect('/mR/joinTo/'.$request->room_uuid)->with(['message'=>[false,'Click Join Room, if u dont want to change your name',$request->room_uuid]]);
+            }
+        }
+    }
+    public function get_permission($roomID,$user_id) {
+        $get_rooms = Rooms::where('room_uuid',$roomID)->get();
+        $info_user_inRoom = $this->check_user_status_in_room($get_rooms[0],$user_id);
+        $Permission = '';
+        foreach ($info_user_inRoom as $perm => $Bool_ids) {
+            if ($Bool_ids === true) {
+                $Permission = $perm;
+            }
+        }
+        if ($Permission == '') {
+            $Permission = 'MEMBER';
+        }
+        return $Permission;
+    }
+    public function genarate_room(Request $request,string $roomID){
+        $get_rooms = Rooms::where('room_uuid',$roomID)->get();
+        if (count($get_rooms) == 0) {
+            return redirect('/mR/joinTo/'.$roomID)->with(['message'=>[false,'There is no room with this id',$roomID]]);
+        }else{
+            $info_user_inRoom = $this->check_user_status_in_room($get_rooms[0],auth()->id());
+            $member_check = $this->is_member_in_list($get_rooms[0],"Members",auth()->id());
+            $dublicate_detect = ($member_check == true)?$member_check:false;
+            $room_type = $get_rooms[0]->type;
+            $host_details = ($this->get_host_information($roomID));
+            $Permission = $this->get_permission($roomID,auth()->id());
+            if ($room_type != 'public') {
+                $message = '';
+                if ($info_user_inRoom['accept_m'] != true && $info_user_inRoom['HOST'] != true && $info_user_inRoom['MOD'] != true) {
+                    if ($info_user_inRoom['wait_to_accept'] === true) {
+                        $message = 'Your membership request has been sent,pls wait';
+                    }else{
+                        $this->make_user_visible_in_wait_list($roomID);
+                        $message = 'You are not a member of this group Your request has been sent to the administrators';
+                    }
+                    return redirect('/mR/joinTo/'.$roomID)->with(['message'=>[false,$message,$roomID]]);
+                }
+            }
+            $this->make_user_visible_in_Member_list($get_rooms[0]);
+            return view('meetingRoom.Room',[
+                'my_custom_name'=>$request->my_custom_name,
+                'roomUUID'=>$roomID,'roomID'=>$get_rooms[0]->id,
+                'Permission'=>$Permission,
+                'duplicate'=>$dublicate_detect,
+                "HOST_userName"=> $host_details[0],
+                "HOST_id"=> $host_details[1],
+            ]);
+        }
+    }
+    public function get_host_information($roomUUID){
+        $room_creator_id =  Rooms::where('room_uuid',$roomUUID)->get('creator_id')[0]->creator_id;
+        $host_information = User::where('id', $room_creator_id)->get('UserName')[0];
+        return [$host_information->UserName,$room_creator_id];
+    }
+    public function make_user_visible_in_wait_list($room_id){
+        $room_info = Rooms::where('room_uuid',$room_id)->get();
+        if (!($room_info[0]->wait_to_accept == null)) {
+            $string_ids = $room_info[0]->wait_to_accept . "," . auth()->id();
+        }else{
+            $string_ids = (string) auth()->id();
+        }
+        Rooms::where('room_uuid',$room_id)->update([
+            'wait_to_accept'=> $string_ids
+        ]);
+    }
+    public function make_user_visible_in_Member_list($room_info){
+        $member_check = $this->is_member_in_list($room_info,"Members",auth()->id());
+        $need_update = true;
+        $string_ids='';
+        if (!($member_check === true)) {
+            if (is_string($member_check)) {
+                $string_ids = $member_check . "," . auth()->id();
+            }else{
+                $string_ids = (string) auth()->id();
+            }
+        }else{
+            $need_update = false;
+        }
+        if ($need_update) {
+            Rooms::where('room_uuid',$room_info->room_uuid)->update([
+                'Members'=> $string_ids
+            ]);
+        }
+    }
+    public function joinTo_page(string $roomID){
+        $message = session()->get("message");
+        if ($message != null) {
+            if ($message[0] === false) {
+                return view('meetingRoom.join',['roomID'=>$message[2],'message'=> $message[1]]);
+            }else{
+                return view('meetingRoom.join',['roomID'=>$roomID]);
+            }
+        }else{
+            return view('meetingRoom.join',['roomID'=>$roomID]);
+        }
+    }
+    public function check_user_status_in_room($roomID,$user_id){
+        if (is_string($roomID)) {
+            $get_rooms = Rooms::where('room_uuid',$roomID)->get();
+            $roomID = $get_rooms[0];
+        }
+        $host_check = $this->is_member_host($roomID,$user_id);
+        $moderator_check = $this->is_member_in_list($roomID,array_keys($roomID->toArray())[5],$user_id);
+        $accept_m_check = $this->is_member_in_list($roomID,array_keys($roomID->toArray())[7],$user_id);
+        $wait_to_accept_check = $this->is_member_in_list($roomID,array_keys($roomID->toArray())[6],$user_id);
+        $all_data = ["HOST"=>$host_check,"MOD"=>$moderator_check,"accept_m"=>$accept_m_check,"wait_to_accept"=>$wait_to_accept_check];
+        return $all_data;
+    }
+    public function is_member_host($roomInfo,$user_id){
+        if (($roomInfo->creator_id) == $user_id) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public function is_member_in_list($room_INFO,$column,$user_id){
+        $bool_am_i = false;
+        if ($room_INFO->$column === null) {
+            return null;
+        }else{
+            $list_members = explode(",",$room_INFO->$column);
+            for ($i=0; $i < count($list_members); $i++) { 
+                if ($list_members[$i] == $user_id) {
+                    $bool_am_i = true;
+                }
+            }
+            if (!$bool_am_i) {
+                // array_push($list_members, (string) auth()->id());
+                $string_ids = '';
+                for ($i=0; $i < count($list_members); $i++) { 
+                    if ($string_ids == '') {
+                        $string_ids = $list_members[$i];
+                    }else{
+                        $string_ids = $string_ids . ",". $list_members[$i];
+                    }
+                }
+                return $string_ids;
+            }else{
+                return true;
+            }
+        }
+        
+    }
+    public function have_Rooms($my_id){
+        $have_rooms = Rooms::where("creator_id",$my_id)->get();
+        if (count($have_rooms) == 0) {
+            return true;
+        }else{
+            return $have_rooms;
+        }
+    }
+    public function member_disconnect(Request $request){
+        return $request;
+        $room_info = Rooms::where('room_uuid',$request->room_uuid)->get();
+        $string_id = '';
+        if ($room_info[0]->Members != null) {
+            $get_ids = explode(",",$room_info[0]->Members);
+            for ($i=0; $i < count($get_ids); $i++) { 
+                if ($get_ids[$i] == $request->fr_id) {
+                    unset($get_ids[$i]);
+                }
+            }
+            foreach ($get_ids as $ids) {
+                if ($string_id == "") {
+                    $string_id = $ids;
+                }else{
+                    $string_id = $string_id . "," . $ids;
+                }
+            }
+        }else{
+            $string_id = null;
+        }
+        Rooms::where('room_uuid',$request->room_uuid)->update([
+            'Members'=> $string_id
+        ]);
+        return $string_id;
+    }
+    public function get_members_peer_id(Request $request){
+        $room_info_req = $request->room_info;
+        $ROOM_ID = $room_info_req[1];
+        $room_info = Rooms::where('id',$ROOM_ID)->get('Members');
+        $room_string_ids = $room_info[0]->Members;
+        $room_array_ids = explode(",",$room_string_ids);
+        $peer_ids=[];
+        for ($i=0; $i < count($room_array_ids); $i++) { 
+            array_push($peer_ids,($room_array_ids[$i]."_".$ROOM_ID));
+        }
+        return($peer_ids);
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// if ($roomID[0]->wait_to_accept == null) {
+//     Rooms::where('room_uuid',$request->room_uuid)->update([
+//         'wait_to_accept' => ''. auth()->id()
+//     ]);
+// }else{
+//     $wait_member = explode(",",$roomID[0]->wait_to_accept);
+//     array_push($wait_member, (string) auth()->id());
+//     $string_ids = '';
+//     for ($i=0; $i < count($wait_member); $i++) { 
+//         if ($wait_member[$i] != auth()->id()) {
+//             if ($string_ids == '') {
+//                 $string_ids = $wait_member[$i];
+//             }else{
+//                 $string_ids = $string_ids . ",". $wait_member[$i];
+//             }
+//         }
+//     }
+//     if ($string_ids != '') {
+//         Rooms::where('room_uuid',$request->room_uuid)->update([
+//             'wait_to_accept' => $string_ids
+//         ]);
+//     }
+// }
