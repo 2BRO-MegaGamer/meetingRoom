@@ -10,4 +10,16 @@
         </div>
     </div>
 </div>
+@php
+    $output ='';
+    if ($errors->any()) {
+        $errors_detail = $errors->get('*');
+        $errors_key = array_keys($errors_detail);
+        $t_error = 'show_notification("warning",(("'.$errors_key[0].'").replaceAll("_"," ")),"'.$errors_detail[$errors_key[0]][0].'",false);';
+        $output = 'window.addEventListener("load",()=>{'.$t_error.'})';
+    }
+@endphp
+<script type="text/javascript" defer>
+    {!! $output !!}
+</script>
 @endsection

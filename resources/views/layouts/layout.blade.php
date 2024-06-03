@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     @vite(['resources/sass/app.scss'])
     <meta charset="UTF-8">
@@ -63,7 +64,6 @@
     </div> --}}
     <div id="toasts_div"></div>
     @vite(['resources/js/homepage.js','resources/js/bootstrap.js','resources/js/notification_Toasts.js'])
-
 
 </body>
 </html>

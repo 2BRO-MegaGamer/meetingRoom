@@ -1,9 +1,11 @@
-import './bootstrap';
 import 'animate.css';
+import jQuery from "jquery";
 import './homepage/script';
 import { show_hide_pass } from "./homepage/script";
+import { show_notification } from "./notification_Toasts";
 import Alpine from 'alpinejs';
 window.Alpine = Alpine;
 window.show_hide_pass = show_hide_pass;
-
+window.$ = jQuery;
+window.show_notification = show_notification;
 Alpine.start();

@@ -6,7 +6,7 @@
 <div class="row w-100 m-0 p-0 mt-3">
     <div class="col-lg-2 col-md-4 col-sm-6 col-xs-12">
         <ul class="list-group">
-            <a class="list-group-item btn border-1 mx-2 my-1" style="background: {{env("BG_COLOR","#60A091")}}" id="profile_menu" active onclick="change_overview('profile',this)" >
+            <a class="list-group-item btn border-1 mx-2 my-1" style="background: {{env("BG_COLOR","#60A091")}}" id="profile_menu">
                 <div class="row w-100 h-100">
                     <div class="col-1 m-auto">
                         <i class="bi bi-person-circle"></i>

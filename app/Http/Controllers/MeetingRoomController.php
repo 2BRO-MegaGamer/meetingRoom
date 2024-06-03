@@ -38,13 +38,15 @@ class MeetingRoomController extends Controller
             }
         }
     }
-    public function get_permission($roomID,$user_id) {
-        $get_rooms = Rooms::where('room_uuid',$roomID)->get();
+    public function get_permission($room_UUID,$user_id) {
+        $get_rooms = Rooms::where('room_uuid',$room_UUID)->get();
         $info_user_inRoom = $this->check_user_status_in_room($get_rooms[0],$user_id);
         $Permission = '';
+        
         foreach ($info_user_inRoom as $perm => $Bool_ids) {
             if ($Bool_ids === true) {
                 $Permission = $perm;
+                break;
             }
         }
         if ($Permission == '') {
@@ -188,14 +190,13 @@ class MeetingRoomController extends Controller
             return $have_rooms;
         }
     }
-    public function member_disconnect(Request $request){
-        return $request;
-        $room_info = Rooms::where('room_uuid',$request->room_uuid)->get();
+    public function member_disconnect($room_uuid,$id){
+        $room_info = Rooms::where('room_uuid',$room_uuid)->get(['Members']);
         $string_id = '';
         if ($room_info[0]->Members != null) {
             $get_ids = explode(",",$room_info[0]->Members);
             for ($i=0; $i < count($get_ids); $i++) { 
-                if ($get_ids[$i] == $request->fr_id) {
+                if ($get_ids[$i] == $id) {
                     unset($get_ids[$i]);
                 }
             }
@@ -209,10 +210,80 @@ class MeetingRoomController extends Controller
         }else{
             $string_id = null;
         }
-        Rooms::where('room_uuid',$request->room_uuid)->update([
+        Rooms::where('room_uuid',$room_uuid)->update([
             'Members'=> $string_id
         ]);
         return $string_id;
+    }
+    public function remove_from_mod_member($room_uuid,$id) {
+        $room_info = Rooms::where('room_uuid',$room_uuid)->get(['MOD_member']);
+        $string_id = null;
+        if ($room_info[0]->MOD_member != null) {
+            $get_ids = explode(",",$room_info[0]->MOD_member);
+            for ($i=0; $i < count($get_ids); $i++) { 
+                if ($get_ids[$i] == $id) {
+                    unset($get_ids[$i]);
+                }
+            }
+            foreach ($get_ids as $ids) {
+                if ($string_id == "") {
+                    $string_id = $ids;
+                }else{
+                    $string_id = $string_id . "," . $ids;
+                }
+            }
+        }
+        Rooms::where('room_uuid',$room_uuid)->update([
+            'MOD_member'=> $string_id
+        ]);
+    }
+    public function remove_from_banned_member($room_uuid,$id) {
+        $room_info = Rooms::where('room_uuid',$room_uuid)->get(['banned_m']);
+        $string_id = '';
+        if ($room_info[0]->banned_m != null) {
+            $get_ids = explode(",",$room_info[0]->banned_m);
+            for ($i=0; $i < count($get_ids); $i++) { 
+                if ($get_ids[$i] == $id) {
+                    unset($get_ids[$i]);
+                }
+            }
+            foreach ($get_ids as $ids) {
+                if ($string_id == "") {
+                    $string_id = $ids;
+                }else{
+                    $string_id = $string_id . "," . $ids;
+                }
+            }
+        }else{
+            $string_id = null;
+        }
+        Rooms::where('room_uuid',$room_uuid)->update([
+            'banned_m'=> $string_id
+        ]);
+    }
+    public function remove_from_kicked_member($room_uuid,$id) {
+        $room_info = Rooms::where('room_uuid',$room_uuid)->get(['removed_m']);
+        $string_id = '';
+        if ($room_info[0]->removed_m != null) {
+            $get_ids = explode(",",$room_info[0]->removed_m);
+            for ($i=0; $i < count($get_ids); $i++) { 
+                if ($get_ids[$i] == $id) {
+                    unset($get_ids[$i]);
+                }
+            }
+            foreach ($get_ids as $ids) {
+                if ($string_id == "") {
+                    $string_id = $ids;
+                }else{
+                    $string_id = $string_id . "," . $ids;
+                }
+            }
+        }else{
+            $string_id = null;
+        }
+        Rooms::where('room_uuid',$room_uuid)->update([
+            'removed_m'=> $string_id
+        ]);
     }
     public function get_members_peer_id(Request $request){
         $room_info_req = $request->room_info;

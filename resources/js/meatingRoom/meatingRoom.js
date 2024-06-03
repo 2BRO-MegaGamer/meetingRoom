@@ -297,6 +297,9 @@ function load_old_announcement() {
                 }
             }
         },
+        error:function(error){
+            console.log(error);
+        }
     });
 }
 
@@ -824,7 +827,7 @@ function AFK_math_test() {
     var random_operators = Math.floor(Math.random()*4);
     var operators = ['-','+','*','/'];
     var result = tow_random_number[0] + operators[random_operators] + tow_random_number[1];
-    if (eval(result) < 0) {
+    if ((random_operators == 3 && (tow_random_number[0] % tow_random_number[1] == 0))|| eval(result) < 0) {
         AFK_math_test();
     }else{
         var first_div = document.createElement("div");
@@ -887,6 +890,7 @@ function AFK_math_test() {
             }
         })
     }
+
 }
 function AFK_mouse_test() {
     var first_div = document.createElement("div");
@@ -1019,98 +1023,105 @@ function update_member_list() {
 
 export function add_member_to_list(peer_id,data) {
     var id = peer_id.split("_")[0];
-    if (id == USER_ID && id == HOST_ID) {
-        $("#HOST_internet_status").removeClass("text-danger");
-        $("#HOST_internet_status").addClass("text-success");
+    if (data == undefined) {
+        $.ajax({
+            type: "POST",
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:'/mR/get_username_from_id',
+            data: {
+                _token : $('meta[name="csrf-token"]').attr('content'),
+                my_info:[USER_NAME,USER_ID,USER_TOKEN],
+                room_info:[ROOM_UUID,ROOM_ID,ROOM_PERMISSION],
+                id:id
+            },
+            success: function(data) {
+                add_member_to_list(peer_id,data)
+            }
+        });
     }else{
-        if (data == undefined) {
-            $.ajax({
-                type: "POST",
-                headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url:'/mR/get_username_from_id',
-                data: {
-                    _token : $('meta[name="csrf-token"]').attr('content'),
-                    my_info:[USER_NAME,USER_ID,USER_TOKEN],
-                    room_info:[ROOM_UUID,ROOM_ID,ROOM_PERMISSION],
-                    id:id
-                },
-                success: function(data) {
-                    add_member_to_list(peer_id,data)
-                }
-            });
-        }else{
-            if (data[1] != "HOST") {
-                var modal_option = ``;
-                switch (ROOM_PERMISSION) {
-                    case "HOST":
-                        modal_option = `
-                        <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-                        <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-                        <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
-                        <button class="btn btn-danger "><i class="bi bi-exclamation-octagon"></i></button>
-                        <button class="btn btn-dark "><i class="bi bi-person-fill-up"></i></button>
-                        <button class="btn btn-dark rounded-top-0"><i class="bi bi-person-fill-down"></i></button>
-                        `;
-                        break;
-                    case "MOD":
-                        modal_option = `
-                        <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-                        <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-                        <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
-                        <button class="btn btn-danger rounded-top-0"><i class="bi bi-exclamation-octagon"></i></button>
-                        `;
-                        break;
-                    default:
-                        modal_option = `
-                        <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-                        <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-                        `;
-                        break;
-                }
-                var basic_fron_member_list = `
-                <div class="my-2" id="`+id+`_member_list_div">
-                    <div class="container w-100">
-                        <button class="btn btn-info d-flex gap-2 w-100 justify-content-between"data-bs-toggle="modal" data-bs-target="#`+id+`_modal">
-                            <div class="m-auto">
-                                <div class="text-center w-100">
-                                    <h6 id="HOST_userName" class="mb-0 fw-bolder">`+data[0]+`</h6>
-                                    <small>`+id+`</small>
-                                </div>
-                            </div>
-                            <small id="`+id+`_internet_status" class="opacity-100 text-`+((id == USER_ID)?"success":"danger")+` my-auto text-end"><i class="bi bi-circle-fill"></i></small>
-                        </button>
+        // switch (ROOM_PERMISSION) {
+        //     case "HOST":
+        //         modal_option = `
+        //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
+        //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
+        //         <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
+        //         <button class="btn btn-danger "><i class="bi bi-exclamation-octagon"></i></button>
+        //         <button class="btn btn-dark "><i class="bi bi-person-fill-up"></i></button>
+        //         <button class="btn btn-dark rounded-top-0"><i class="bi bi-person-fill-down"></i></button>
+        //         `;
+        //         break;
+        //     case "MOD":
+        //         modal_option = `
+        //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
+        //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
+        //         <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
+        //         <button class="btn btn-danger rounded-top-0"><i class="bi bi-exclamation-octagon"></i></button>
+        //         `;
+        //         break;
+        //     default:
+        //         modal_option = `
+        //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
+        //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
+        //         `;
+        //         break;
+        // }
+        var basic_fron_member_list = `
+        <div class="my-2" id="`+id+`_member_list_div">
+            <div class="container w-100">
+                <button class="btn btn-info d-flex gap-2 w-100 justify-content-between"data-bs-toggle="modal" data-bs-target="#`+id+`_modal">
+                    <div class="m-auto">
+                        <div class="text-center w-100">
+                            <h6 id="HOST_userName" class="mb-0 fw-bolder">`+data[0]+`</h6>
+                            <small>`+id+`</small>
+                        </div>
                     </div>
-                    <div class="modal" id="`+id+`_modal" aria-labelledby="HOST_label" aria-hidden="true" tabindex="-1" >
-                        <div class="modal-dialog">
-                            <div class="modal-content position-relative bg-dark text-light p-0 m-0">
-                                <div class="modal-header text-center">
-                                    <div class="text-center w-100">
-                                        <h6 id="HOST_userName" class="mb-0 fw-bolder">`+data[0]+`</h6>
-                                        <small>`+id+`</small>
-                                    </div>
-                                </div>
-                                <div class="modal-footer p-0 m-0">
-                                    <div class="w-100 btn-group my-1 p-2">
-                                        <button class="btn text-light  rounded-0"><i class="bi bi-volume-up"></i></button>
-                                        <button class="btn text-light  rounded-0"><i class="bi bi-flag"></i></button>
-                                    </div>
-                                    <div class="w-100 btn-group p-0 m-0">
-                                    `+modal_option+`
-                                    </div>
-                                </div>
+                    <small id="`+id+`_internet_status" class="opacity-100 text-`+((id == USER_ID)?"success":"danger")+` my-auto text-end"><i class="bi bi-circle-fill"></i></small>
+                </button>
+            </div>
+            <div class="modal" id="`+id+`_modal" aria-labelledby="HOST_label" aria-hidden="true" tabindex="-1" >
+                <div class="modal-dialog">
+                    <div class="modal-content position-relative bg-dark text-light p-0 m-0">
+                        <div class="modal-header text-center">
+                            <div class="text-center w-100">
+                                <h6 id="HOST_userName" class="mb-0 fw-bolder">`+data[0]+`</h6>
+                                <small>`+id+`</small>
                             </div>
+                        </div>
+                        <div class="modal-footer p-0 m-0">
+                            <div class="w-100 btn-group my-1 p-2">
+                                <button class="btn text-light  rounded-0"><i class="bi bi-volume-up"></i></button>
+                                <button class="btn text-light  rounded-0"><i class="bi bi-flag"></i></button>
+                            </div>
+                            <div class="w-100 p-0 m-0" id="`+id+`_btn_permission"></div>
                         </div>
                     </div>
                 </div>
-                `;
-                if (data[1] == "MOD") {
-                    document.getElementById("mods_info").innerHTML += basic_fron_member_list;
-                }else{
-                    document.getElementById("members_info").innerHTML += basic_fron_member_list;
-                }
-            }
+            </div>
+        </div>
+        `;
+        switch (data[1]) {
+            case "HOST":
+                document.getElementById("hosts_info").innerHTML += basic_fron_member_list;
+                break;
+            case "MOD":
+                document.getElementById("mods_info").innerHTML += basic_fron_member_list;
+                
+                break;
+            default:
+                document.getElementById("members_info").innerHTML += basic_fron_member_list;
+                
+                break;
+        }
+        // if (data[1] == "MOD") {
+        //     document.getElementById("mods_info").innerHTML += basic_fron_member_list;
+        // }else{
+        //     document.getElementById("members_info").innerHTML += basic_fron_member_list;
+        // }
+        if (document.getElementById(id+"_btn_permission").innerHTML == "" && id != USER_ID) {
+            var modal_option = create_btn_permission(id);
+            document.getElementById(id+"_btn_permission").append(modal_option);
         }
     }
 }

@@ -148,6 +148,7 @@
             </div>
         </div>
     </div>
+    <div id="toasts_div"></div>
     @vite(['resources/js/meating_room.js','resources/js/bootstrap.js','resources/js/notification_Toasts.js'])
 
 </body>

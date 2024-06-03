@@ -33,6 +33,72 @@ class inRoomController extends Controller
             ]);
         }
     }
+    public function HOST_MOD_cando(Request $request) {
+        $user_permission = (new MeetingRoomController)->get_permission($request->room_info[0],$request->id);
+        $my_permission = (new MeetingRoomController)->get_permission($request->room_info[0],auth()->user()->id);
+        if (($my_permission == "MOD" && $user_permission == "HOST")||($my_permission == "MOD" && $user_permission == "MOD")) {
+            return false;
+        }
+        switch ($request->action) {
+            case "kick":
+                $all_removed_member_string = Rooms::where("id",$request->room_info[1])->get('removed_m')[0]->removed_m;
+                if ($all_removed_member_string == null) {
+                    Rooms::where("id",$request->room_info[1])->update([
+                        "removed_m"=>$request->id
+                    ]);
+                }else{
+                    $all_removed_member_array = explode(",",$all_removed_member_string);
+                    if (array_search($request->id,$all_removed_member_array) == "") {
+                        $all_removed_member_string = $all_removed_member_string .",". $request->id;
+                        Rooms::where("id",$request->room_info[1])->update([
+                            "removed_m"=>$all_removed_member_string
+                        ]);
+                    }
+                }
+                (new MeetingRoomController)->member_disconnect($request->room_info[0],$request->id);
+                break;
+            case "ban":
+                $all_banned_member_string = Rooms::where("id",$request->room_info[1])->get('banned_m')[0]->banned_m;
+                if ($all_banned_member_string == null) {
+                    Rooms::where("id",$request->room_info[1])->update([
+                        "banned_m"=>$request->id
+                    ]);
+                }else{
+                    $all_banned_member_array = explode(",",$all_banned_member_string);
+                    if (array_search($request->id,$all_banned_member_array) == "") {
+                        $all_banned_member_string = $all_banned_member_string .",". $request->id;
+                        Rooms::where("id",$request->room_info[1])->update([
+                            "banned_m"=>$all_banned_member_string
+                        ]);
+                    }
+                }
+                (new MeetingRoomController)->member_disconnect($request->room_info[0],$request->id);
+                break;
+            case "promote":
+                $all_promote_member_string = Rooms::where("id",$request->room_info[1])->get('MOD_member')[0]->MOD_member;
+                if ($all_promote_member_string == null) {
+                    Rooms::where("id",$request->room_info[1])->update([
+                        "MOD_member"=>$request->id
+                    ]);
+                }else{
+                    $all_promote_member_array = explode(",",$all_promote_member_string);
+                    if (array_search($request->id,$all_promote_member_array) == "") {
+                        $all_promote_member_string = $all_promote_member_string .",". $request->id;
+                        Rooms::where("id",$request->room_info[1])->update([
+                            "MOD_member"=>$all_promote_member_string
+                        ]);
+                    }
+                }
+                (new MeetingRoomController)->member_disconnect($request->room_info[0],$request->id);
+                break;
+            case "demote":
+                (new MeetingRoomController)->remove_from_mod_member($request->room_info[0],$request->id);
+                (new MeetingRoomController)->member_disconnect($request->room_info[0],$request->id);
+                break;
+        }
+        return($request);
+    }
+
     public function load_old_announcement(Request $request){
         $roomID = $request->room_info[0];
         $permission = (new MeetingRoomController)->get_permission($roomID,auth()->user()->id);

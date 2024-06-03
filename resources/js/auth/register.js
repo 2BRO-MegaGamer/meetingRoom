@@ -1,6 +1,5 @@
 
 function submit_check_errors(username_check,email_check,phone_check) {
-
     document.getElementById("logbtn_submit_singup").disabled = true;
     const firstname_singup =document.getElementById("firstname_singup");
     const lastname_singup =document.getElementById("lastname_singup");
@@ -32,11 +31,8 @@ function submit_check_errors(username_check,email_check,phone_check) {
                 error++;
             }
         }
-
-
         if (val_inp.id === "phone_number") {
             var is_error = check_phone_num(val_inp);
-
             if (is_error) {
                 if (val_inp.getAttribute("class").split("border border-2 border-danger").length < 2) {
                     val_inp.setAttribute("class",val_inp.getAttribute("class") + " border border-2 border-danger");
@@ -48,7 +44,6 @@ function submit_check_errors(username_check,email_check,phone_check) {
                 }
             }
         }
-
         if (val_inp.id === "password_0_singup") {
             var is_error = check_0_password(val_inp);
             if (is_error) {
@@ -62,7 +57,6 @@ function submit_check_errors(username_check,email_check,phone_check) {
                 }
             }
         }
-
         if (val_inp.id === "email_singup") {
             var is_error = email_reg_test(val_inp);
             if (is_error) {
@@ -71,13 +65,11 @@ function submit_check_errors(username_check,email_check,phone_check) {
                 }
                 error++;
             }else{
-
                 if (val_inp.getAttribute("class").split("border border-2 border-danger").length > 1) {
                     val_inp.setAttribute("class",val_inp.getAttribute("class").split("border border-2 border-danger")[0]);
                 }
             }
         }
-
         if (val_inp.id === "password_1_singup") {
             var is_error = check_both_password(val_inp,password_0_singup);
             if (is_error) {
@@ -104,36 +96,25 @@ function submit_check_errors(username_check,email_check,phone_check) {
                 }
             }
         }
-
-
     }))
     if (username_check == "false") {
         show_hide_error_messages("username_not_uniqe")
     }
-
-
     if (email_check == "false") {
         show_hide_error_messages("email_not_uniqe")
     }
-
-
     if (phone_check == "false") {
         show_hide_error_messages("phone_not_uniqe")
     }
-
-
     if (username_check == "true" && email_check == "true" && phone_check == "true") {
         document.getElementById("form_singup").submit();
     }else{
         if (error === 0 && username_check == undefined && email_check == undefined && phone_check == undefined) {
             check_if_unique([username_singup,email_singup,phone_number])
-
         }else{
             document.getElementById("logbtn_submit_singup").disabled = false;
-
         }
     }
-
 }
 
 function email_reg_test(val_inp) {
@@ -173,7 +154,6 @@ function check_0_password(val_inp) {
 
 function check_both_password(val_inp,pass_input_0) {
     const passwordMessage = document.getElementById('password_1_singup_error');
-
     if (val_inp.value != pass_input_0.value) {
         show_hide_error_messages("password_not_same")
         return true;
@@ -181,7 +161,6 @@ function check_both_password(val_inp,pass_input_0) {
         return false;
     }
 }
-
 function check_phone_num(val_inp) {
     const phone_message = document.getElementById('phone_number_error');
     const regexTest_phone_number = /09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}/.test(val_inp.value);
@@ -192,7 +171,6 @@ function check_phone_num(val_inp) {
         return false;
     }
 }
-
 function check_if_unique(val_inp) {
     $.ajax({
         type: 'POST',

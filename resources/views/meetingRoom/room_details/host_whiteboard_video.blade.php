@@ -17,8 +17,7 @@
                     <button use_WMSR="webcam" class="btn col text-light fs-4"><i class="bi bi-camera-video"></i></button>
                     <button use_WMSR="audio" class="btn col text-light fs-4" id="use_mic_btn" mute="true"><i class="bi bi-mic-mute"></i></button>
                     <button use_WMSR="video" class="btn col fs-4 text-light"><i class="bi bi-display"></i></button>
-                    <button use_WMSR="raisehand" class="btn col fs-4 text-light"><i class="bi bi-hand-index"></i></button>
-                    
+                    <button use_WMSR="raisehand" class="btn col fs-4 text-light" status="false"><i class="bi bi-hand-index"></i></button>
                 </div>
             </div>
         </div>

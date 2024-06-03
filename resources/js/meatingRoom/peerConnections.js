@@ -5,7 +5,6 @@ export function create_connection_room() {
     // var peer = new Peer(USER_ID+"_"+ROOM_ID,{host:"192.168.1.104",port: 9000, path: "/myapp",debug:1});
     var peer = new Peer(USER_ID+"_"+ROOM_ID,{host:"192.168.1.103", port: 9000, path: '/',debug:1});
 
-    console.log(Peer);
     peer.on('open',(id)=>{
         PEER_INFO["NEW_PEER"] =  peer;
         peer.on('call', async function(call) {
@@ -23,6 +22,7 @@ export function create_connection_room() {
         });
         peer.on('connection', function(conn) {
             var peer_id = conn.peer;
+            var u_id = peer_id.split("_")[0];
             // conn.on("open",()=>{
             //     if (PEER_INFO['CONNECTION'][peer_id] == undefined) {
             //         PEER_INFO['CONNECTION'] = {};
@@ -35,7 +35,9 @@ export function create_connection_room() {
             PEER_INFO['CONNECTION'][peer_id][0] = conn;
             PEER_INFO['CONNECTION'][peer_id][1] = true;
             check_conn_connection(conn,"receive");
-            add_member_to_list(conn.peer)
+            if (document.getElementById(u_id+"_member_list_div") == null) {
+                add_member_to_list(conn.peer);
+            }
             console.log("connect, someone or me? ",conn);
         });
         get_members_ids(id);
@@ -122,11 +124,25 @@ document.querySelectorAll("[use_WMSR]").forEach((btn)=>{
     });
 })
 async function change_WMSR(WMSR,btn) {
-    var status;
-    var media_stream;
-    console.log("  |  change_WMSR  | " , PEER_INFO.MEDIA_STREAM[1][WMSR]);
-    if (PEER_INFO.MEDIA_STREAM[1][WMSR] != undefined) {
-        if (WMSR != "raisehand") {
+
+    console.log("  |  change_WMSR  | " , WMSR,btn);
+    if ( WMSR == "raisehand") {
+        var status = (btn.getAttribute("status")=="true")?true:false;
+        (status)?btn.setAttribute("status","false"):btn.setAttribute("status","true");
+        var all_users = Object.keys(PEER_INFO.CONNECTION);
+        if (all_users.length != 0) {
+            all_users.forEach(user_peerid=>{
+                var conn = PEER_INFO.CONNECTION[user_peerid][0];
+                if (PEER_INFO.CONNECTION[user_peerid][1]) {
+                    conn.send({"raisehand":{"status":!status}});
+                }
+            });
+        }
+        change_WMSR_overview(WMSR,btn);
+    }else{
+        var status;
+        var media_stream;
+        if (PEER_INFO.MEDIA_STREAM[1][WMSR] != undefined ) {
             if (PEER_INFO.MEDIA_STREAM[0][WMSR]) {
                 PEER_INFO.MEDIA_STREAM[1][WMSR].getTracks().forEach(function(track) {
                     track.stop();
@@ -135,60 +151,60 @@ async function change_WMSR(WMSR,btn) {
                 PEER_INFO.MEDIA_STREAM[0][WMSR] = false;
                 PEER_INFO.MEDIA_STREAM[1][WMSR] = undefined;
             }
-        }
-    }else{
-        status = true;
-        switch (WMSR) {
-            case "webcam":
-                media_stream = await get_webcam_stream();
-                break;
-            case "audio":
-                media_stream = await get_voicechat_stream();
-                break;
-            case "video":
-                media_stream = await get_display_stream();
-                break;
-            case "raisehand":
-                break;
-        }
-        var all_media_name = Object.keys(PEER_INFO.MEDIA_STREAM[0]);
-        var is_media_active =false;
-        all_media_name.forEach((media)=>{
-            if (PEER_INFO.MEDIA_STREAM[0][media] == true && media != "empty") {
-                is_media_active = true;
-            }
-        })
-        if (is_media_active == false) {
-            PEER_INFO.MEDIA_STREAM[0]["empty"] = true;
         }else{
-            PEER_INFO.MEDIA_STREAM[0]["empty"] = false;
-        }
-        var all_users = Object.keys(PEER_INFO.CONNECTION);
-        var peer = PEER_INFO.NEW_PEER;
-        user_WMSR_set(USER_ID+"_"+ROOM_ID);
-        if (all_users.length != 0) {
-            all_users.forEach(user_peerid=>{
-                var option = {metadata:{}};
-                option['metadata'][USER_ID+"_"+ROOM_ID] = WMSR;
-                var call = peer.call(user_peerid,media_stream,option);
-                if (PEER_INFO["CALL"][user_peerid] != undefined) {
-                    PEER_INFO["CALL"][user_peerid]["call"][WMSR] = call;
+            status = true;
+            switch (WMSR) {
+                case "webcam":
+                    media_stream = await get_webcam_stream();
+                    break;
+                case "audio":
+                    media_stream = await get_voicechat_stream();
+                    break;
+                case "video":
+                    media_stream = await get_display_stream();
+                    break;
+            }
+            var all_media_name = Object.keys(PEER_INFO.MEDIA_STREAM[0]);
+            var is_media_active =false;
+            all_media_name.forEach((media)=>{
+                if (PEER_INFO.MEDIA_STREAM[0][media] == true && media != "empty") {
+                    is_media_active = true;
                 }
-            });
+            })
+            if (is_media_active == false) {
+                PEER_INFO.MEDIA_STREAM[0]["empty"] = true;
+            }else{
+                PEER_INFO.MEDIA_STREAM[0]["empty"] = false;
+            }
+            var all_users = Object.keys(PEER_INFO.CONNECTION);
+            var peer = PEER_INFO.NEW_PEER;
+            user_WMSR_set(USER_ID+"_"+ROOM_ID);
+            if (all_users.length != 0) {
+                all_users.forEach(user_peerid=>{
+                    var option = {metadata:{}};
+                    option['metadata'][USER_ID+"_"+ROOM_ID] = WMSR;
+                    var call = peer.call(user_peerid,media_stream,option);
+                    if (PEER_INFO["CALL"][user_peerid] != undefined) {
+                        PEER_INFO["CALL"][user_peerid]["call"][WMSR] = call;
+                    }
+                });
+            }
         }
-    }
-    if (status != undefined) {
-        var all_users = Object.keys(PEER_INFO.CONNECTION);
-        if (all_users.length != 0) {
-            all_users.forEach(user_peerid=>{
-                var conn = PEER_INFO.CONNECTION[user_peerid][0];
-                if (PEER_INFO.CONNECTION[user_peerid][1]) {
-                    conn.send({"change_media":[(PEER_INFO.MEDIA_STREAM)[0],WMSR,status]});
-                }
-            });
+        if (status != undefined) {
+            var all_users = Object.keys(PEER_INFO.CONNECTION);
+            if (all_users.length != 0) {
+                all_users.forEach(user_peerid=>{
+                    var conn = PEER_INFO.CONNECTION[user_peerid][0];
+                    if (PEER_INFO.CONNECTION[user_peerid][1]) {
+                        conn.send({"change_media":[(PEER_INFO.MEDIA_STREAM)[0],WMSR,status]});
+                    }
+                });
+            }
         }
+        change_WMSR_overview(WMSR,btn);
     }
-    change_WMSR_overview(WMSR,btn)
+
+
 }
 function change_WMSR_overview(WMSR,btn) {
 
@@ -223,11 +239,14 @@ function change_WMSR_overview(WMSR,btn) {
             },1000)
             break;
         case "raisehand":
-            if (true) {
-
-            }else{
-
-            }
+            setTimeout(()=>{
+                var status = (btn.getAttribute("status")=="true")?true:false;
+                if (status) {
+                    btn.innerHTML = '<i class="bi bi-hand-index-fill"></i>';
+                }else{
+                    btn.innerHTML = '<i class="bi bi-hand-index"></i>';
+                }
+            },1000)
             break;
     }
     $(btn).addClass("animate__animated animate__faster animate__flipOutX")
@@ -274,7 +293,7 @@ function check_conn_connection(conn,send_receive) {
     }
     conn.on("open",()=>{
         var u_peer_id = conn.peer;
-
+        var u_id = u_peer_id.split("_")[0];
         conn.on("data",(data)=>{
             switch (Object.keys(data)[0]) {
                 case "change_media":
@@ -302,6 +321,26 @@ function check_conn_connection(conn,send_receive) {
                     var log_for_peer = data["HOST_announcement"];
                     var id = log_for_peer.id;
                     announcement_front_div(log_for_peer,true);
+                    break;
+                case "raisehand":
+                    var status = data["raisehand"].status;
+                    var raisehand_row_statos = document.getElementById(u_id + "_row_raisehand_status");
+                    if (status) {
+                        $(raisehand_row_statos).removeClass("d-none");
+                    }else{
+                        $(raisehand_row_statos).addClass("d-none");
+                    }
+                    console.log("raisehand_row_statos " , raisehand_row_statos,u_peer_id);
+                    break;
+                case "kicked_banned":
+                    if (u_id == HOST_ID) {
+                        location.replace("/");
+                    }
+                    break;
+                case "promote_demote":
+                    if (u_id == HOST_ID) {
+                        location.reload();
+                    }
                     break;
                 // case "reconnect_call":
                 //     var call = (PEER_INFO.CALL)[u_peer_id]["call"];
@@ -619,6 +658,16 @@ async function create_call_to_user(u_peer_id,overview_created,call_again) {
             //     // user_WMSR_set(u_peer_id);
             // })
             call.on("close",()=>{
+                var u_id = (call.peer).split("_")[0];
+                if (document.getElementById(u_id+"_internet_status") != null) {
+                    $("#"+u_id+"_internet_status").removeClass("text-success");
+                    $("#"+u_id+"_internet_status").addClass("text-danger");
+                    PEER_INFO["CALL"][u_peer_id]["call"]={video:undefined,audio:undefined,webcam:undefined,empty:undefined};
+                }
+                if (document.getElementById(call.peer+"_mic_webcam_div") != null) {
+                    document.getElementById(call.peer+"_mic_webcam_div").remove();
+                }
+                
                 console.log("CALL closed by :",call.peer);
             })
             console.log("create_call_to_user",u_peer_id,overview_created,call_again);
@@ -644,10 +693,114 @@ function get_username_with_id(u_peer_id) {
         }
     });
 }
+export function create_btn_permission(id) {
+    var all_btns = [];
+    var first_div = document.createElement("div");
+    $(first_div).addClass("w-100 h-100 btn-group p-0 m-0");
+    if (ROOM_PERMISSION == "MOD" || ROOM_PERMISSION == "HOST") {
+        var btn_kick = document.createElement("button");
+        btn_kick.innerHTML = '<i class="bi bi-box-arrow-right"></i>';
+        var btn_ban = document.createElement("button");
+        btn_ban.innerHTML = '<i class="bi bi-exclamation-octagon"></i>';
+        $(btn_kick).addClass("btn btn-warning");
+        $(btn_ban).addClass("btn btn-danger");
+        all_btns.push([btn_kick,"kick"]);
+        all_btns.push([btn_ban,"ban"]);
+    }
+    if (ROOM_PERMISSION == "HOST") {
+        var btn_promote = document.createElement("button");
+        btn_promote.innerHTML = '<i class="bi bi-person-fill-up"></i>';
+        var btn_demote = document.createElement("button");
+        btn_demote.innerHTML = '<i class="bi bi-person-fill-down"></i>';
+        $(btn_promote).addClass("btn btn-dark");
+        $(btn_demote).addClass("btn btn-dark");
+        all_btns.push([btn_promote,"promote"]);
+        all_btns.push([btn_demote,"demote"]);
+    }
+    for (let i = 0; i < all_btns.length; i++) {
+        if (i == 0 || i == (all_btns.length - 1)) {
+            $(all_btns[i][0]).addClass("rounded-top-0");
+        }
+        all_btns[i][0].addEventListener("click",()=>{
+            $.ajax({
+                type: "POST",
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url:'/mR/HOST_MOD_cando',
+                data: {
+                    _token : $('meta[name="csrf-token"]').attr('content'),
+                    my_info:[USER_NAME,USER_ID,USER_TOKEN],
+                    room_info:[ROOM_UUID,ROOM_ID,ROOM_PERMISSION],
+                    id:id,
+                    action:all_btns[i][1]
+                },
+                success: function(data) {
+
+                    var H_messaeg = "";
+                    if (all_btns[i][1] == "kick" || all_btns[i][1] == "ban") {
+                        H_messaeg = "kicked_banned";
+                        
+                    }else{
+                        H_messaeg = "promote_demote";
+                    }
+                    var conn = PEER_INFO.CONNECTION[(id+"_"+ROOM_ID)];
+                    if (conn != undefined && conn[1] == true) {
+                        conn = conn[0];
+                        var message ={};
+                        message[H_messaeg] = [USER_NAME,USER_ID,USER_TOKEN];
+                        conn.send(message);
+                    }
+                    switch (all_btns[i][1]) {
+                        case "kick":
+                            show_notification("success",(("kick").replaceAll("_"," ")),"User has been kicked",true);
+                            break;
+                        case "ban":
+                            show_notification("success",(("ban").replaceAll("_"," ")),"User has been banned",true);
+                            break;
+                        case "promote":
+                            show_notification("success",(("promote").replaceAll("_"," ")),"User has been promoted",true);
+                            break;
+                        case "demote":
+                            show_notification("success",(("demote").replaceAll("_"," ")),"User has been demote",true);
+                            break;
+                    }
+                }
+            });
+        });
+        first_div.append(all_btns[i][0]);
+    }
+    return first_div;
+}
 
 function create_overview_for_call(u_peer_id,answer) {
     var u_id = u_peer_id.split("_")[0];
-
+    // switch (ROOM_PERMISSION) {
+    //     case "HOST":
+    //         modal_option = `
+    //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
+    //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
+    //         <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
+    //         <button class="btn btn-danger "><i class="bi bi-exclamation-octagon"></i></button>
+    //         <button class="btn btn-dark "><i class="bi bi-person-fill-up"></i></button>
+    //         <button class="btn btn-dark rounded-top-0"><i class="bi bi-person-fill-down"></i></button>
+    //         `;
+    //         break;
+    //     case "MOD":
+    //         modal_option = `
+    //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
+    //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
+    //         <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
+    //         <button class="btn btn-danger rounded-top-0"><i class="bi bi-exclamation-octagon"></i></button>
+    //         `;
+    //         break;
+    //     default:
+    //         modal_option = `
+    //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
+    //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
+    //         `;
+    //         break;
+    // }
     if (document.getElementById(u_peer_id+"_mic_webcam_div") == null) {
         if (answer != undefined) {
             var base_html = `
@@ -672,7 +825,14 @@ function create_overview_for_call(u_peer_id,answer) {
                         </button>
                         </div>
                 </div>
-                <div class="row p-0 m-0">
+                <div class="row p-0 m-0 rounded position-relative" >
+                    <div class="position-absolute w-75 h-100 d-none" id="`+u_id+`_row_raisehand_status">
+                        <div class="w-100 h-100 position-relative">
+                            <div class="position-absolute translate-middle start-100 top-50">
+                                <i class="bi bi-hand-index fs-4 text-success"></i>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col">
                         <div class="fw-bold">
                             `+answer+`
@@ -688,7 +848,7 @@ function create_overview_for_call(u_peer_id,answer) {
                         <div class="modal-dialog ">
                             <div class="modal-content bg-dark">
                                 <div class="modal-header">
-                                    <div class="row w-100 p-0 m-0">
+                                    <div class="row w-100 p-0 m-0 " >
                                         <div class="col">
                                             <div class="fw-bold">
                                                 `+answer+`
@@ -702,6 +862,8 @@ function create_overview_for_call(u_peer_id,answer) {
                                         </div>
                                     </div>
                                 </div>
+                                <div class="modal-body w-100 p-0 m-0" id="`+u_id+`_btn_permission">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -712,7 +874,10 @@ function create_overview_for_call(u_peer_id,answer) {
             </div>
             `;
             document.getElementById("webcam_or_voice_in_use").innerHTML += base_html;
-
+            if (document.getElementById(u_id+"_btn_permission").innerHTML == ""&& u_id != USER_ID) {
+                var modal_option = create_btn_permission(u_id);
+                document.getElementById(u_id+"_btn_permission").append(modal_option);
+            }
             create_call_to_user(u_peer_id,true,undefined);
         }else{
             get_username_with_id(u_peer_id);

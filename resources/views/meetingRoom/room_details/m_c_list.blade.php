@@ -4,43 +4,7 @@
         <button class="btn btn-dark w-100 fs-2" sidebar_detail="members" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
     </div>
     <div id="members_info_scroll_style" class="list-group overflow-auto rounded-0 w-100 h-100"  style="max-height: 100%;">
-        <div id="hosts_info">
-            <div class="my-2">
-                <div class="container w-100">
-                    <button class="btn btn-info d-flex gap-2 w-100 justify-content-between"data-bs-toggle="modal" data-bs-target="#HOST_modal">
-                        <div class="m-auto">
-                            <div class="text-center w-100">
-                                <h6 id="HOST_userName" class="mb-0 fw-bolder">{{$HOST_userName}}</h6>
-                                <small>{{$HOST_id}}</small>
-                            </div>
-                        </div>
-                        <small id="HOST_internet_status" class="opacity-100 text-danger my-auto text-end"><i class="bi bi-circle-fill"></i></small>
-                    </button>
-                </div>
-                <div class="modal" id="HOST_modal" aria-labelledby="HOST_label" aria-hidden="true" tabindex="-1" >
-                    <div class="modal-dialog">
-                        <div class="modal-content position-relative bg-dark text-light p-0 m-0">
-                            <div class="modal-header text-center">
-                                <div class="text-center w-100">
-                                    <h6 id="HOST_userName" class="mb-0 fw-bolder">{{$HOST_userName}}</h6>
-                                    <small>{{$HOST_id}}</small>
-                                </div>
-                            </div>
-                            <div class="modal-footer p-0 m-0">
-                                <div class="w-100 btn-group my-1 p-2">
-                                    <button class="btn text-light  rounded-0"><i class="bi bi-volume-up"></i></button>
-                                    <button class="btn text-light  rounded-0"><i class="bi bi-flag"></i></button>
-                                </div>
-                                <div class="w-100 btn-group p-0 m-0">
-                                    <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-                                    <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="hosts_info"></div>
         <div id="mods_info"></div>
         <div id="members_info"></div>
     </div>
