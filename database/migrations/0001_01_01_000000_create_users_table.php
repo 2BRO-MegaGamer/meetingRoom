@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('gender');
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_number_verified_at')->nullable();
-            $table->longText('servers')->nullable();
+            $table->longText('rooms')->nullable();
             $table->string('in_site_permission')->default('member');
             $table->string('password');
             $table->string('last_ip');

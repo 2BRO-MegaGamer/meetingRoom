@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/js/homepage.js',
                 'resources/js/meating_room.js',
                 'resources/js/auth/register.js',
+                'resources/js/auth/profile.js',
                 'resources/js/auth/login.js',
                 'resources/js/auth/phone_verification.js',
             ],

@@ -9,32 +9,41 @@ use Illuminate\Support\Str;
 class MeetingRoomController extends Controller
 {
     public function create_page(){
-        $no_rooms = $this->have_Rooms(auth()->id());
-        if ($no_rooms === true) {
-            $uuid = Str::uuid();
-            return view('meetingRoom.create',["roomID" => $uuid]);
-        }else{
-            return view('meetingRoom.create',["roomID" => $no_rooms[0]->room_uuid,'room_status'=>$no_rooms[0]->type]);
+        $message = session()->get("message");
+        $uuid = Str::uuid();
+        if ($message != null) {
+            return view('meetingRoom.create',["roomID" => $uuid,"message"=>$message[1]]);
         }
+        return view('meetingRoom.create',["roomID" => $uuid]);
     }
     public function create_room(Request $request){
         $no_rooms = $this->have_Rooms(auth()->id());
-        if ($no_rooms === true) {
+        if (count($no_rooms) < 3) {
             $new_rooms = new Rooms;
             $new_rooms->creator_id = auth()->id();
             $new_rooms->room_name = $request->room_name;
             $new_rooms->room_uuid = $request->room_uuid;
             $new_rooms->type = $request->type_Room;
             $new_rooms->save();
-            return redirect('/mR/joinTo/'.$request->room_uuid)->with(['message'=>[false,'Click Join Room, if u dont want to change your name',$request->room_uuid]]);
+            $this->add_to_user_tabel($new_rooms->id);
+            return redirect('/mR/joinTo/'.$request->room_uuid)->with(['message'=>[false,'Click Join Room, if u dont want to change your name',$new_rooms->room_uuid]]);
         }else{
-            if ($no_rooms[0]->creator_id == auth()->id()) {
-                if (!($no_rooms[0]->type === $request->type_Room)) {
-                    Rooms::where('room_uuid',$no_rooms[0]->room_uuid)->update([
-                        'type'=>$request->type_Room
-                    ]);
-                }
-                return redirect('/mR/joinTo/'.$request->room_uuid)->with(['message'=>[false,'Click Join Room, if u dont want to change your name',$request->room_uuid]]);
+            return redirect('/mR/create')->with(['message'=>[false,'You cannot make more than 3 rooms']]);
+        }
+    }
+    private function add_to_user_tabel($room_id) {
+        $all_rooms = User::where("id",auth()->user()->id)->get('rooms')[0]->rooms;
+        if ($all_rooms == null) {
+            User::where("id",auth()->user()->id)->update([
+                "rooms"=>$room_id
+            ]);
+        }else{
+            $all_rooms_array = explode(",",$all_rooms);
+            if (array_search($room_id,$all_rooms_array) == "") {
+                $all_rooms = $all_rooms .",". $room_id;
+                User::where("id",auth()->user()->id)->update([
+                    "rooms"=>$all_rooms
+                ]);
             }
         }
     }
@@ -183,12 +192,8 @@ class MeetingRoomController extends Controller
         
     }
     public function have_Rooms($my_id){
-        $have_rooms = Rooms::where("creator_id",$my_id)->get();
-        if (count($have_rooms) == 0) {
-            return true;
-        }else{
-            return $have_rooms;
-        }
+        $have_rooms = Rooms::where("creator_id",$my_id)->get('id');
+        return $have_rooms;
     }
     public function member_disconnect($room_uuid,$id){
         $room_info = Rooms::where('room_uuid',$room_uuid)->get(['Members']);

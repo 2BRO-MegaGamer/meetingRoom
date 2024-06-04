@@ -1,21 +1,16 @@
 @extends('layouts.layout')
 @php
     $title = 'create Room';
-    $private_option='';
-    $public_option='';
-    if (isset($room_status)) {
-        if ($room_status === 'private') {
-            $private_option='selected';
-        }else{
-            $public_option='selected';
-
-        }
-    }
 @endphp
 @section('content')
 
 <div class="container rounded" style="max-width: 34rem;">
     <div class="">
+        @if (isset($message))
+        <div class="text-warning fs-3 text-center">
+            <p>{{$message}}</p>
+        </div>
+        @endif
         <form method="post" action="/mR/create_room">
             @csrf
             <div class="form-floating">
@@ -28,8 +23,8 @@
             </div>
             <div>
                 <select name="type_Room" class="form-select bg-secondary border-0 rounded-0">
-                    <option value="private" {{$private_option}}>private</option>
-                    <option value="public" {{$public_option}}>public</option>
+                    <option value="private" selected>private</option>
+                    <option value="public">public</option>
                 </select>
             </div>
 
