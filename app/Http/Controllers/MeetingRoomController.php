@@ -63,7 +63,9 @@ class MeetingRoomController extends Controller
         }
         return $Permission;
     }
-    public function genarate_room(Request $request,string $roomID){
+    public function genarate_room(Request $request){
+        $my_custom_name = $request->my_custom_name;
+        $roomID = $request->room_uuid;
         $get_rooms = Rooms::where('room_uuid',$roomID)->get();
         if (count($get_rooms) == 0) {
             return redirect('/mR/joinTo/'.$roomID)->with(['message'=>[false,'There is no room with this id',$roomID]]);

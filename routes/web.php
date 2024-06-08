@@ -12,11 +12,9 @@ use App\Http\Middleware\meatingRoomSecurity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Profiler\Profile;
-
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/home',[HomeController::class, 'index']);
 Route::post('/register/check_if_unique', [CheckUnique::class, 'check_if_unique']);
-
 Route::prefix('administrator')->group(function (){
     Route::get('/',[administrator_panel::class, 'view_panel']);
     Route::post('/get_info',[administrator_panel::class, 'get_info']);
@@ -25,7 +23,6 @@ Route::prefix('administrator')->group(function (){
 Route::middleware('auth')->group(function () {
     Route::get('/phone/verify',[PhoneVerificationController::class , 'show_verification_form']);
     Route::post('/phone/verify',[PhoneVerificationController::class , 'send_text_message']);
-
     Route::get('/seeprofile',[SeeprofileController::class , 'seeprofile']);
     Route::post('/seeprofile',[SeeprofileController::class , 'UserName_bio_img_change']);
     Route::post('/get_member_profile_and_detail',[Profile::class , 'get_members_profile_info_with_peer_id']);
@@ -34,9 +31,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/create',[MeetingRoomController::class,'create_page']);
         Route::post('/create_room',[MeetingRoomController::class,'create_room']);
         Route::middleware(meatingRoomSecurity::class)->get('/Room/{RoomID}',[MeetingRoomController::class,'genarate_room']);
-        Route::middleware(meatingRoomSecurity::class)->post('/Room/{RoomID}',[MeetingRoomController::class,'genarate_room']);
         Route::get('/joinTo/{RoomID}',[MeetingRoomController::class,'joinTo_page']);
-
         Route::middleware(meatingRoomSecurity::class)->group(function () {
         /////////////////////////inROOOM/////////////////////////
             Route::post('/get_members_peer_id',[MeetingRoomController::class,'get_members_peer_id']);
@@ -58,7 +53,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/false',function () {
         return ("message " .session()->get('message'));
     });
-
     ////////////////MeetingRoom/////////////////
 });
 

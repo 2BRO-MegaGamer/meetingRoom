@@ -3,6 +3,7 @@ window.addEventListener("DOMContentLoaded",()=>{
         add_event_sidebar_menu();
         load_old_messages();
         load_old_announcement();
+        change_activity_div_responsive();
         setTimeout(()=>{
             page_load();
         },1000)
@@ -10,7 +11,7 @@ window.addEventListener("DOMContentLoaded",()=>{
 });
 function dynamic_loadScreen() {
     var resize_loadscreen = document.getElementById("resize_loadscreen");
-    var monitor_size = [window.outerWidth,window.outerHeight,(window.outerWidth < window.outerHeight) ? 1:0];
+    var monitor_size = [window.innerWidth,window.innerHeight,(window.innerWidth < window.innerHeight) ? 1:0];
     resize_loadscreen.style.width = (monitor_size[monitor_size[2]]/4) + "px";
     resize_loadscreen.style.height = (monitor_size[monitor_size[2]]/4)+ "px";
 }
@@ -821,13 +822,13 @@ function check_afk_status(k_t) {
         }
     },1000)
 }
-
 function AFK_math_test() {
     var tow_random_number = [Math.floor(Math.random()*10)+1,Math.floor(Math.random()*10)+1];
     var random_operators = Math.floor(Math.random()*4);
     var operators = ['-','+','*','/'];
     var result = tow_random_number[0] + operators[random_operators] + tow_random_number[1];
-    if ((random_operators == 3 && (tow_random_number[0] % tow_random_number[1] == 0))|| eval(result) < 0) {
+    var eval_result = eval(result);
+    if ((random_operators == 3 && (tow_random_number[0] % tow_random_number[1] != 0)) || eval_result < 0 || (Number.isInteger(eval_result) != true)) {
         AFK_math_test();
     }else{
         var first_div = document.createElement("div");
@@ -882,7 +883,7 @@ function AFK_math_test() {
         },1000);
         document.getElementById("submit_result_btn").addEventListener("click",()=>{
             var result_input =document.getElementById("result_input");
-            if (eval(result) == parseInt(result_input.value)) {
+            if (eval_result == parseInt(result_input.value)) {
                 document.getElementById("close_AFK_math_modal_btn").click();
                 clearInterval(Interval_timer);
             }else{
@@ -1140,14 +1141,13 @@ function change_sidebar_details(btn,m_c_a) {
             btn.setAttribute("active","");
         }
         var monitorSize = window.innerWidth;
-        var percentage = 0;
+        var percentage = 50;
         if (monitorSize>990) {
             percentage = 30;
         }else if (monitorSize >575){
             percentage = 50;
-        }else{
-            percentage = undefined;
         }
+        console.log("percentage " ,percentage);
         animation_sidebar(percentage);
         document.getElementById("sidebar_report_activity_leave").style.animation = "sidebar_RAL_animation 1.5s forwards";
         setTimeout(()=>{
@@ -1163,6 +1163,25 @@ function change_sidebar_details(btn,m_c_a) {
             $("#sidebar_btns").addClass("d-none");
         },1500)
     }
+}
+function change_activity_div_responsive() {
+    var webcam_or_voice_1 = document.getElementById("webcam_or_voice_1");
+    var webcam_or_voice_2 = document.getElementById("webcam_or_voice_2");
+    if (window.innerWidth < 992) {
+        webcam_or_voice_2.innerHTML = webcam_or_voice_1.innerHTML;
+        webcam_or_voice_1.remove();
+        webcam_or_voice_2.id = "webcam_or_voice_1";
+    }
+    var reload = false;
+    window.addEventListener("resize",(e)=>{
+        if (window.innerWidth < 992) {
+            if (!reload) {
+                location.reload();
+                reload = true;
+            }
+        }
+    })
+    
 }
 function animation_sidebar(percentage) {
     var width = $("#sidebarmenu_div").innerWidth();

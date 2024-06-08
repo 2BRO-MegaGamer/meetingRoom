@@ -94,11 +94,11 @@
         </div>
         <div class="vw-100 vh-100 bg-dark d-none" id="confirm_connect">
             <div class="w-100 h-100 d-flex justify-content-center align-items-center">
-                <div class="card w-50 text-light" style="background: none;">
+                <div class="card text-light" style="background: none;">
                     <div class="card-header text-center h3">
                         Do you want to join this room?
                     </div>
-                    <div class="card-footer ">
+                    <div class="card-footer">
                         <div class="m-auto row">
                             <div class="w-25">
                                 <button class="btn btn-danger" id="dont_connect">close</button>
@@ -113,13 +113,13 @@
         </div>
         <div class="w-100 h-100 p-0 m-0 d-none" id="meatingRoom">
             <div class="w-100 h-100 text-light row w-100 m-auto z-3">
-                <div class="col-xxl-2 col-xl-2 col-lg-2 col-md-2  d-none d-xxl-block d-xl-block d-lg-block p-0 m-0">
+                <div class="col-xxl-2 col-xl-2 col-lg-2 col-md-2 col-sm-5 position-relative d-none d-xxl-block d-xl-block d-lg-block p-0 m-0" >
                     @include('meetingRoom.room_details.webcam_mic')
                 </div>
                 <div class="col p-0 m-0">
                     @include('meetingRoom.room_details.host_whiteboard_video')
                 </div>
-                <div class="col-xxl-1 col-xl-1 col-md-1 col-sm-1 col-xs-2 col-2 p-0 m-0" id="sidebarmenu_div">
+                <div class="col-xxl-1 col-xl-1 col-md-1 col-sm-1 bg-dark col-xs-2 col-2 p-0 m-0 z-3" id="sidebarmenu_div">
                     <div class="w-100 h-100 ">
                         @include('meetingRoom.room_details.sidebar')
                     </div>
@@ -128,29 +128,13 @@
             </div>
         </div>
     </div>
-    <div>
-        <button type="button" id="btn_for_user_connect_to_room" class="mw-0 mh-0 d-none" data-bs-toggle="modal" data-bs-target="#user_connect_to_room"></button>
-        <div class="modal fade" id="user_connect_to_room" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="user_connect_to_room_Label" aria-hidden="true">
-            <div class="modal-dialog text-light ">
-                <div class="modal-content bg-dark">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="user_connect_to_room_Label">Do you want to join this room?</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <small>By clicking on the connect button, you accept the <a href="#">rules</a> of this site</small>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="modal_btn_close_user_want_to_make_connection" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="modal_btn_connect_user_want_to_make_connection" onclick="user_want_to_make_connection(false)">connect</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div id="toasts_div"></div>
     @vite(['resources/js/meating_room.js','resources/js/bootstrap.js','resources/js/notification_Toasts.js'])
-
+    <style>
+        .modal-backdrop {
+            z-index: 0;
+        }
+    </style>
 </body>
 {{-- <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script> --}}

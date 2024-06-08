@@ -740,7 +740,6 @@ export function create_btn_permission(id) {
                     var H_messaeg = "";
                     if (all_btns[i][1] == "kick" || all_btns[i][1] == "ban") {
                         H_messaeg = "kicked_banned";
-                        
                     }else{
                         H_messaeg = "promote_demote";
                     }
@@ -765,6 +764,10 @@ export function create_btn_permission(id) {
                             show_notification("success",(("demote").replaceAll("_"," ")),"User has been demote",true);
                             break;
                     }
+                    var btn = document.getElementById(id+"_detail_Modal").querySelector("button");
+                    if (btn != undefined) {
+                        btn.click();
+                    }
                 }
             });
         });
@@ -772,6 +775,13 @@ export function create_btn_permission(id) {
     }
     return first_div;
 }
+
+// setTimeout(()=>{
+//     for (let i = 0; i < 50; i++) {
+//         create_overview_for_call(("test_"+i),"test");
+//     }
+//     console.log("created");
+// },5000);
 
 function create_overview_for_call(u_peer_id,answer) {
     var u_id = u_peer_id.split("_")[0];
@@ -804,77 +814,79 @@ function create_overview_for_call(u_peer_id,answer) {
     if (document.getElementById(u_peer_id+"_mic_webcam_div") == null) {
         if (answer != undefined) {
             var base_html = `
-            <div class="w-100 rounded border border-2  my-1" id="${u_peer_id}_mic_webcam_div">
-                <div class="w-100 d-none" id="${u_peer_id}_video_div">
-                    <div id="${u_peer_id}_carousel_webcam_video" class="carousel slide">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <video id="${u_peer_id}_video_tag" class="w-100" ></video>
+            <div class="col m-0 p-1" id="${u_peer_id}_mic_webcam_div" >
+                <div class="w-100 rounded  border border-2">
+                    <div class="w-100 d-none" id="${u_peer_id}_video_div">
+                        <div id="${u_peer_id}_carousel_webcam_video" class="carousel slide">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <video id="${u_peer_id}_video_tag" class="w-100" ></video>
+                                </div>
+                                <div class="carousel-item">
+                                    <video id="${u_peer_id}_webcam_tag" id="" class="w-100" ></video>
+                                </div>
                             </div>
-                            <div class="carousel-item">
-                                <video id="${u_peer_id}_webcam_tag" id="" class="w-100" ></video>
+                            <button class="carousel-control-prev d-none" id="${u_peer_id}_switch_wv_prev" type="button" data-bs-target="#${u_peer_id}_carousel_webcam_video" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next d-none" id="${u_peer_id}_switch_wv_next" type="button" data-bs-target="#${u_peer_id}_carousel_webcam_video" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
                             </div>
-                        </div>
-                        <button class="carousel-control-prev d-none" id="${u_peer_id}_switch_wv_prev" type="button" data-bs-target="#${u_peer_id}_carousel_webcam_video" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next d-none" id="${u_peer_id}_switch_wv_next" type="button" data-bs-target="#${u_peer_id}_carousel_webcam_video" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                        </div>
-                </div>
-                <div class="row p-0 m-0 rounded position-relative" >
-                    <div class="position-absolute w-75 h-100 d-none" id="`+u_id+`_row_raisehand_status">
-                        <div class="w-100 h-100 position-relative">
-                            <div class="position-absolute translate-middle start-100 top-50">
-                                <i class="bi bi-hand-index fs-4 text-success"></i>
-                            </div>
-                        </div>
                     </div>
-                    <div class="col">
-                        <div class="fw-bold">
-                            `+answer+`
+                    <div class="row p-0 m-0 rounded position-relative" >
+                        <div class="position-absolute w-75 h-100 d-none" id="`+u_id+`_row_raisehand_status">
+                            <div class="w-100 h-100 position-relative">
+                                <div class="position-absolute translate-middle start-100 top-50">
+                                    <i class="bi bi-hand-index fs-4 text-success"></i>
+                                </div>
+                            </div>
                         </div>
-                        <small>
-                            `+u_id+`
-                        </small>
-                    </div>
-                    <button id="`+u_id+`_detail_Modal_btn" class=" btn btn-light rounded-end-1 col-2 p-0 m-0 fs-2" type="button" data-bs-toggle="modal" data-bs-target="#`+u_id+`_detail_Modal">
-                        <i class="bi bi-arrow-bar-right"></i>
-                    </button>
-                    <div class="modal fade" id="`+u_id+`_detail_Modal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog ">
-                            <div class="modal-content bg-dark">
-                                <div class="modal-header">
-                                    <div class="row w-100 p-0 m-0 " >
-                                        <div class="col">
-                                            <div class="fw-bold">
-                                                `+answer+`
+                        <div class="col">
+                            <div class="fw-bold">
+                                `+answer+`
+                            </div>
+                            <small>
+                                `+u_id+`
+                            </small>
+                        </div>
+                        <button id="`+u_id+`_detail_Modal_btn" class=" btn btn-light rounded-end-1 col-3 fs-2" type="button" data-bs-toggle="modal" data-bs-target="#`+u_id+`_detail_Modal">
+                            <i class="bi bi-arrow-bar-right"></i>
+                        </button>
+                        <div class="modal fade" id="`+u_id+`_detail_Modal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog ">
+                                <div class="modal-content bg-dark">
+                                    <div class="modal-header">
+                                        <div class="row w-100 p-0 m-0 " >
+                                            <div class="col">
+                                                <div class="fw-bold">
+                                                    `+answer+`
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                #`+u_id+`
+                                            </div>
+                                            <div class="col-2 text-center">
+                                                <button type="button" class="btn-close text-light fw-bold" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
                                             </div>
                                         </div>
-                                        <div class="col">
-                                            #`+u_id+`
-                                        </div>
-                                        <div class="col-2 text-center">
-                                            <button type="button" class="btn-close text-light fw-bold" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
-                                        </div>
                                     </div>
-                                </div>
-                                <div class="modal-body w-100 p-0 m-0" id="`+u_id+`_btn_permission">
+                                    <div class="modal-body w-100 p-0 m-0" id="`+u_id+`_btn_permission"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="opacity-0 w-0 h-0 position-absolute strat-0 top-0">
-                    <audio src="" id="${u_peer_id}_mic_tag"></audio>
+                    <div class="opacity-0 w-0 h-0 position-absolute strat-0 top-0">
+                        <audio src="" id="${u_peer_id}_mic_tag"></audio>
+                    </div>
                 </div>
             </div>
             `;
-            document.getElementById("webcam_or_voice_in_use").innerHTML += base_html;
-            if (document.getElementById(u_id+"_btn_permission").innerHTML == ""&& u_id != USER_ID) {
+            document.getElementById("webcam_or_voice_1").innerHTML += base_html;
+            console.log("permission ",document.getElementById(u_id+"_btn_permission").innerHTML == "" , u_id != USER_ID);
+            if (document.getElementById(u_id+"_btn_permission").innerHTML == "" && u_id != USER_ID) {
                 var modal_option = create_btn_permission(u_id);
                 document.getElementById(u_id+"_btn_permission").append(modal_option);
             }

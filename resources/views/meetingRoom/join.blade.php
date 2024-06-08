@@ -6,11 +6,9 @@
     }
 @endphp
 @section('content')
-
 <div class="container rounded" style="max-width: 34rem;">
     <div class="">
-        <form method="post" id="form_join_req" action="/mR/Room/{{$roomID}}">
-            @csrf
+        <form method="get" id="form_join_req" action="/mR/Room/{{$roomID}}">
             @if (isset($message))
             <div class="text-warning fs-3 text-center">
                 <p>{{$message}}</p>
@@ -28,12 +26,11 @@
         </form>
     </div>
 </div>
-<script>
+<script defer>
     function change_room_id() {
         const room_id = document.getElementById("room_uuid")
         const form_join_req = document.getElementById("form_join_req")
         form_join_req.action = '/mR/Room/'+room_id.value;
     }
 </script>
-
 @endsection
