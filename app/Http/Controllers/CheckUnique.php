@@ -8,20 +8,15 @@ class CheckUnique extends Controller
 {
     public function check_if_unique(Request $request) {
         $array_result = ["userName"=>"false","email"=>"false","phone_number"=>"false"];
-
         $validator_userName = Validator::make($request->all(), [
             'userName' => 'unique:users'
         ]);
-
         $validator_email = Validator::make($request->all(), [
             'email' => 'unique:users'
         ]);
-        $phone_number['phone_number'] = substr($request->phone_number,1);
-        $validator_phoneNumber = Validator::make($phone_number, [
+        $validator_phoneNumber = Validator::make($request->all(), [
             'phone_number' => 'unique:users'
         ]);
-
-
         if ($validator_userName->passes()) {
             $array_result['userName'] = "true";
         }

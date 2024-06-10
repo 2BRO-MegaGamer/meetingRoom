@@ -39,6 +39,7 @@ class inRoomController extends Controller
         if (($my_permission == "MOD" && $user_permission == "HOST")||($my_permission == "MOD" && $user_permission == "MOD")) {
             return false;
         }
+        // return [$user_permission , $my_permission,$request->action];
         switch ($request->action) {
             case "kick":
                 $all_removed_member_string = Rooms::where("id",$request->room_info[1])->get('removed_m')[0]->removed_m;

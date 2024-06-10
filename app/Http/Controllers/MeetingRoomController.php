@@ -194,7 +194,7 @@ class MeetingRoomController extends Controller
         
     }
     public function have_Rooms($my_id){
-        $have_rooms = Rooms::where("creator_id",$my_id)->get('id');
+        $have_rooms = Rooms::where("creator_id",$my_id)->get();
         return $have_rooms;
     }
     public function member_disconnect($room_uuid,$id){
@@ -214,6 +214,7 @@ class MeetingRoomController extends Controller
                     $string_id = $string_id . "," . $ids;
                 }
             }
+            $string_id = ($string_id== "")?null:$string_id;
         }else{
             $string_id = null;
         }

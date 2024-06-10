@@ -10,101 +10,65 @@ function submit_check_errors(username_check,email_check,phone_check) {
     const password_1_singup =document.getElementById("password_1_singup");
     const gender_option_singup =document.getElementById("gender_option_singup");
     const all_input_in_form = [firstname_singup,lastname_singup,username_singup,email_singup,phone_number,password_0_singup,password_1_singup,gender_option_singup];
-    const username_singup_error = document.getElementById("username_singup_error");
-    const email_singup_error = document.getElementById("email_singup_error");
-    const phone_number_error = document.getElementById("phone_number_error");
     var empty_input = all_input_in_form.filter((inp=> inp.value == ""));
     var have_value = all_input_in_form.filter((inp=> inp.value != ""));
     var error = 0;
     empty_input.forEach((emp_inp=>{
-        if (emp_inp.getAttribute("class").split("border border-2 border-danger").length < 2) {
-            emp_inp.setAttribute("class",emp_inp.getAttribute("class") + " border border-2 border-danger");
-        }
+        $(emp_inp).addClass("border border-2 border-danger");
         error++;
     }));
     have_value.forEach((val_inp=>{
-        if (val_inp.id === "firstname_singup" || val_inp.id === "lastname_singup" || val_inp.id === "username_singup") {
+        if (val_inp.id == "firstname_singup" || val_inp.id == "lastname_singup" || val_inp.id == "username_singup") {
+            console.log("test lenght ",(val_inp.value).length > 64);
             if ((val_inp.value).length > 64) {
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length < 2) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class") + " border border-2 border-danger");
-                }
-                error++;
-            }
-        }
-        if (val_inp.id === "phone_number") {
-            var is_error = check_phone_num(val_inp);
-            if (is_error) {
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length < 2) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class") + " border border-2 border-danger");
-                }
+                $(val_inp).addClass("border border-2 border-danger");
                 error++;
             }else{
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length > 1) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class").split("border border-2 border-danger")[0]);
-                }
+                $(val_inp).removeClass("border border-2 border-danger");
             }
         }
-        if (val_inp.id === "password_0_singup") {
-            var is_error = check_0_password(val_inp);
-            if (is_error) {
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length < 2) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class") + " border border-2 border-danger");
-                }
-                error++;
-            }else{
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length > 1) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class").split("border border-2 border-danger")[0]);
-                }
-            }
+        var is_error;
+        switch (val_inp.id) {
+            case "phone_number":
+                is_error = check_phone_num(val_inp);
+                break;
+            case "password_0_singup":
+                is_error = check_0_password(val_inp);
+                break;
+            case "password_1_singup":
+                is_error = check_both_password(val_inp,password_0_singup);
+                break;
+            case "email_singup":
+                is_error = email_reg_test(val_inp);
+                break;
+            case "username_singup":
+                is_error = username_reg_test(val_inp,username_singup);
+                break;
         }
-        if (val_inp.id === "email_singup") {
-            var is_error = email_reg_test(val_inp);
-            if (is_error) {
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length < 2) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class") + " border border-2 border-danger");
-                }
-                error++;
-            }else{
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length > 1) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class").split("border border-2 border-danger")[0]);
-                }
-            }
-        }
-        if (val_inp.id === "password_1_singup") {
-            var is_error = check_both_password(val_inp,password_0_singup);
-            if (is_error) {
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length < 2) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class") + " border border-2 border-danger");
-                }
-                error++;
-            }else{
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length > 1) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class").split("border border-2 border-danger")[0]);
-                }
-            }
-        }
-        if (val_inp.id === "username_singup") {
-            var is_error = username_reg_test(val_inp,username_singup);
-            if (is_error) {
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length < 2) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class") + " border border-2 border-danger");
-                }
-                error++;
-            }else{
-                if (val_inp.getAttribute("class").split("border border-2 border-danger").length > 1) {
-                    val_inp.setAttribute("class",val_inp.getAttribute("class").split("border border-2 border-danger")[0]);
-                }
-            }
+        if (is_error) {
+            $(val_inp).addClass("border border-2 border-danger");
+            error++;
+        }else{
+            $(val_inp).removeClass("border border-2 border-danger");
         }
     }))
     if (username_check == "false") {
-        show_hide_error_messages("username_not_uniqe")
+        show_hide_error_messages("username_not_uniqe");
+        $(username_singup).addClass("border border-2 border-danger");
+    }else{
+        $(username_singup).removeClass("border border-2 border-danger");
     }
     if (email_check == "false") {
         show_hide_error_messages("email_not_uniqe")
+        $(email_singup).addClass("border border-2 border-danger");
+    }else{
+        $(email_singup).removeClass("border border-2 border-danger");
     }
     if (phone_check == "false") {
-        show_hide_error_messages("phone_not_uniqe")
+        show_hide_error_messages("phone_not_uniqe");
+        $(phone_number).addClass("border border-2 border-danger");
+    }else{
+        $(phone_number).removeClass("border border-2 border-danger");
     }
     if (username_check == "true" && email_check == "true" && phone_check == "true") {
         document.getElementById("form_singup").submit();

@@ -736,6 +736,7 @@ export function create_btn_permission(id) {
                     action:all_btns[i][1]
                 },
                 success: function(data) {
+                    console.log(data);
 
                     var H_messaeg = "";
                     if (all_btns[i][1] == "kick" || all_btns[i][1] == "ban") {
@@ -764,9 +765,12 @@ export function create_btn_permission(id) {
                             show_notification("success",(("demote").replaceAll("_"," ")),"User has been demote",true);
                             break;
                     }
-                    var btn = document.getElementById(id+"_detail_Modal").querySelector("button");
-                    if (btn != undefined) {
-                        btn.click();
+                    var btn = document.getElementById(id+"_detail_Modal");
+                    if (btn != null) {
+                        btn = btn.querySelector("button");
+                        if (btn != null) {
+                            btn.click();
+                        }
                     }
                 }
             });

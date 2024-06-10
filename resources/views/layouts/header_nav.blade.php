@@ -1,5 +1,5 @@
-<div id="header_users" class="z-3">
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark ">
+<div id="header_users" class="z-3 w-100" style="backdrop-filter: blur(20px)">
+    <nav class="navbar navbar-expand-md navbar-dark ">
         <div class="container-fluid">
             <a class="navbar-brand" href="/home"><img src="/imgs/bigone.jpg" class="rounded" style="height:35px;width:35px"></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">

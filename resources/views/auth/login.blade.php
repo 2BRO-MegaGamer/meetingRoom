@@ -3,7 +3,7 @@
     $title = 'login';
 @endphp
 @section('content')
-<div class="mx-auto rounded-top py-1 my-4 w-100" id="div_first_kol" style="max-width: 30rem; background:{{env("BG_COLOR_FORM", "#7CCFBC")}};border-bottom-left-radius: 10%;border-bottom-right-radius: 10%;">
+<div class="mx-auto rounded-top py-1 my-4 w-100" id="div_first" style="max-width: 30rem; background:{{env("BG_COLOR_FORM", "#7CCFBC")}};border-bottom-left-radius: 10%;border-bottom-right-radius: 10%;">
     <form class=" mx-auto my-4 p-3 text-light" action="{{ route('login') }}"  method="POST" id="form_login_asl">
         @csrf
         <h1 class="text-center">ورود به حساب</h1>

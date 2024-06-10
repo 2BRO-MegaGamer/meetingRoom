@@ -14,6 +14,7 @@ use App\Http\Controllers\UserStatusController;
             <button id="info_user_btn" class="btn btn-secondary dropdown-toggle text-truncate p-1" style="max-width:fit-content" data-bs-toggle="dropdown" aria-expanded="false"></button>
             <ul class="dropdown-menu dropdown-menu-dark">
                 <li><a class="dropdown-item" href="/seeprofile">Profile</a></li>
+                <li><a class="dropdown-item" href="/manageRoom">Room manage</a></li>
                 <li><form action="/logout" method="post"> @csrf<button class="dropdown-item" >log out</button></form></li>
             </ul>
         </div>

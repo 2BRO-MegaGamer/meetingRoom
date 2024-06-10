@@ -4,6 +4,8 @@ window.addEventListener("DOMContentLoaded",()=>{
         load_old_messages();
         load_old_announcement();
         change_activity_div_responsive();
+        wait_to_accept_btns();
+        denny_m_btns();
         setTimeout(()=>{
             page_load();
         },1000)
@@ -975,6 +977,7 @@ function show_sidebar_btns(btns) {
     $(all_btns[0]).addClass("animate__animated animate__fadeInUp animate__faster");
     $(all_btns[2]).addClass("animate__animated animate__fadeInDown animate__faster");
     $(all_btns[1]).addClass("animate__animated animate__fadeIn animate__faster");
+    $(all_btns[3]).addClass("animate__animated animate__fadein animate__faster");
     setTimeout(()=>{
         document.getElementById(m_c_a+"_div").style.opacity = "0";
         document.getElementById(m_c_a+"_div").style.animation = "";
@@ -991,6 +994,7 @@ function show_sidebar_btns(btns) {
                 $(all_btns[0]).removeClass("animate__animated animate__fadeInUp animate__faster");
                 $(all_btns[2]).removeClass("animate__animated animate__fadeInDown animate__faster");
                 $(all_btns[1]).removeClass("animate__animated animate__fadeIn animate__faster");
+                $(all_btns[3]).removeClass("animate__animated animate__fadein animate__faster");
                 all_btns.forEach((btn)=>{
                     btn.disabled = false;
                 });
@@ -1042,32 +1046,6 @@ export function add_member_to_list(peer_id,data) {
             }
         });
     }else{
-        // switch (ROOM_PERMISSION) {
-        //     case "HOST":
-        //         modal_option = `
-        //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-        //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-        //         <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
-        //         <button class="btn btn-danger "><i class="bi bi-exclamation-octagon"></i></button>
-        //         <button class="btn btn-dark "><i class="bi bi-person-fill-up"></i></button>
-        //         <button class="btn btn-dark rounded-top-0"><i class="bi bi-person-fill-down"></i></button>
-        //         `;
-        //         break;
-        //     case "MOD":
-        //         modal_option = `
-        //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-        //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-        //         <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
-        //         <button class="btn btn-danger rounded-top-0"><i class="bi bi-exclamation-octagon"></i></button>
-        //         `;
-        //         break;
-        //     default:
-        //         modal_option = `
-        //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-        //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-        //         `;
-        //         break;
-        // }
         var basic_fron_member_list = `
         <div class="my-2" id="`+id+`_member_list_div">
             <div class="container w-100">
@@ -1147,11 +1125,10 @@ function change_sidebar_details(btn,m_c_a) {
         }else if (monitorSize >575){
             percentage = 50;
         }
-        console.log("percentage " ,percentage);
         animation_sidebar(percentage);
         document.getElementById("sidebar_report_activity_leave").style.animation = "sidebar_RAL_animation 1.5s forwards";
         setTimeout(()=>{
-            document.getElementById("sidebar_report_activity_leave").style.bottom = "93.5%";
+            document.getElementById("sidebar_report_activity_leave").style.bottom = "95%";
             document.getElementById("sidebar_report_activity_leave").style.animation = "";
             $("#"+m_c_a+"_div").removeClass("d-none");
             document.getElementById(m_c_a+"_div").style.animation = "opacity_change 1s forwards"
@@ -1181,7 +1158,6 @@ function change_activity_div_responsive() {
             }
         }
     })
-    
 }
 function animation_sidebar(percentage) {
     var width = $("#sidebarmenu_div").innerWidth();
@@ -1209,6 +1185,7 @@ function animation_sidebar(percentage) {
     $(all_btns[0]).addClass("animate__animated animate__fadeOutDown animate__faster");
     $(all_btns[2]).addClass("animate__animated animate__fadeOutUp animate__faster");
     $(all_btns[1]).addClass("animate__animated animate__fadeOut animate__faster");
+    $(all_btns[3]).addClass("animate__animated animate__fadeOut animate__faster");
     all_btns.forEach((btn)=>{
         btn.disabled = true;
     });
@@ -1224,7 +1201,143 @@ function animation_sidebar(percentage) {
             $(all_btns[0]).removeClass("animate__animated animate__fadeOutDown animate__faster");
             $(all_btns[2]).removeClass("animate__animated animate__fadeOutUp animate__faster");
             $(all_btns[1]).removeClass("animate__animated animate__fadeOut animate__faster");
+            $(all_btns[3]).removeClass("animate__animated animate__fadeOut animate__faster");
         },1000)
     },1000);
+}
 
+function wait_to_accept_btns() {
+    refresh_wait_to_accept_list_event();
+    var wait_to_accept_list = document.getElementById("wait_to_accept_list");
+    wait_to_accept_list = wait_to_accept_list.children;
+    for (let i = 0; i < wait_to_accept_list.length; i++) {
+        var btns = wait_to_accept_list[i].querySelectorAll("button");
+        btns[0].addEventListener("click",()=>{
+            reject_member(wait_to_accept_list[i]);
+        })
+        btns[1].addEventListener("click",()=>{
+            accept_member(wait_to_accept_list[i]);
+        })
+    }
+
+    function refresh_wait_to_accept_list_event() {
+        var refresh_wait_accept_list = document.getElementById("refresh_wait_accept_list");
+        refresh_wait_accept_list.addEventListener("click",()=>{
+            refresh_wait_to_accept_list();
+        })
+    }
+}
+function accept_member(member_div) {
+    var id = (member_div.id).split("_wait_accept")[0];
+    $.ajax({
+        type: "POST",
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url:'/manageRoom/accept_denny_refresh_member',
+        data: {
+            _token : $('meta[name="csrf-token"]').attr('content'),
+            accept_reject:"accept",
+            room_info:ROOM_ID,
+            id:id,
+        },
+        success: function(data) {
+            member_div.remove();
+        }
+    });
+    
+}
+function reject_member(member_div) {
+    var id = (member_div.id).split("_wait_accept")[0];
+    $.ajax({
+        type: "POST",
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url:'/manageRoom/accept_denny_refresh_member',
+        data: {
+            _token : $('meta[name="csrf-token"]').attr('content'),
+            accept_reject:"reject",
+            room_info:ROOM_ID,
+            id:id,
+        },
+        success: function(data) {
+            member_div.remove();
+        }
+    });
+}
+function refresh_wait_to_accept_list() {
+    $.ajax({
+        type: "POST",
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url:'/manageRoom/accept_denny_refresh_member',
+        data: {
+            _token : $('meta[name="csrf-token"]').attr('content'),
+            accept_reject:"refresh",
+            room_info:ROOM_ID,
+        },
+        success: function(data) {
+            var array_id = data.split(",");
+            for (let i = 0; i < array_id.length; i++) {
+                if (document.getElementById(array_id[i]+"_wait_accept") == null) {
+                    front_html_wait_to_accept(array_id[i])
+                }
+            }
+            console.log(data);
+        }
+    });
+    function front_html_wait_to_accept(id) {
+        $.ajax({
+            type: "POST",
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:'/mR/get_username_from_id',
+            data: {
+                _token : $('meta[name="csrf-token"]').attr('content'),
+                my_info:[USER_NAME,USER_ID,USER_TOKEN],
+                room_info:[ROOM_UUID,ROOM_ID,ROOM_PERMISSION],
+                id:id
+            },
+            success: function(data) {
+                var first_div = document.createElement("div");
+                first_div.id = id+"_wait_accept";
+                $(first_div).addClass("col mt-3 card bg-dark text-light border-light p-0 m-0");
+                var basic_HTML = `
+                    <div class="card-header d-flex flex-column text-center">
+                        `+data[0]+`
+                        <small class="text-secondary">`+id+`</small>
+                    </div>
+                    <div class="card-body p-0 m-0">
+                        <div class="btn-group w-100 h-100 p-0 m-0 rounded-0" role="group" id="`+id+`_btn_div"></div>
+                    </div>
+                `;
+                first_div.innerHTML = basic_HTML;
+                var accept_denny_btn = [document.createElement("button"),document.createElement("button")];
+                $(accept_denny_btn[0]).addClass("btn btn-success");
+                accept_denny_btn[0].type = "button";
+                accept_denny_btn[0].innerHTML = '<i class="bi bi-check-lg"></i>';
+                $(accept_denny_btn[1]).addClass("btn btn-danger");
+                accept_denny_btn[1].type = "button";
+                accept_denny_btn[1].innerHTML = '<i class="bi bi-x-lg"></i>';
+                accept_denny_btn[0].addEventListener("click",()=>{
+                    accept_member(first_div);
+                });
+                accept_denny_btn[1].addEventListener("click",()=>{
+                    reject_member(first_div);
+                });
+                document.getElementById("wait_to_accept_list").append(first_div);
+                document.getElementById(id+"_btn_div").append(accept_denny_btn[1]);
+                document.getElementById(id+"_btn_div").append(accept_denny_btn[0]);
+
+            }
+        });
+        
+    }
+}
+function denny_m_btns() {
+    console.log("denny_m_btns");
+    
 }

@@ -12,11 +12,13 @@ class SeeprofileController extends Controller
     public function seeprofile(){
         $user_information = (new HomeController)->get_secure_information(auth()->user()->id);
         $rooms = auth()->user()->rooms;
-        $rooms_array = explode(",",$rooms);
         $room_detail=[];
-        for ($i=0; $i < count($rooms_array); $i++) {
-            $detail = Rooms::where("id",$rooms_array[$i])->get(['creator_id','room_name','room_uuid','type','status','created_at']);
-            $room_detail[$rooms_array[$i]] = $detail[0];
+        if ($rooms != null) {
+            $rooms_array = explode(",",$rooms);
+            for ($i=0; $i < count($rooms_array); $i++) {
+                $detail = Rooms::where("id",$rooms_array[$i])->get(['creator_id','room_name','room_uuid','type','status','created_at']);
+                $room_detail[$rooms_array[$i]] = $detail[0];
+            }
         }
         return view('auth.profile')->with(["room_detail"=>$room_detail,"user_information"=>$user_information]);
     }

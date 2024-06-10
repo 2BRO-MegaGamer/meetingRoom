@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\administrator_panel;
+use App\Http\Controllers\auth\manageRoomController;
 use App\Http\Controllers\Auth\SeeprofileController;
 use App\Http\Controllers\CheckUnique;
 use App\Http\Controllers\HomeController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\inRoomController;
 use App\Http\Controllers\MeetingRoomController;
 use App\Http\Controllers\PhoneVerificationController;
 use App\Http\Middleware\HOST_MODS_cando;
+use App\Http\Middleware\manageRoomSecurity;
 use App\Http\Middleware\meatingRoomSecurity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +26,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/phone/verify',[PhoneVerificationController::class , 'show_verification_form']);
     Route::post('/phone/verify',[PhoneVerificationController::class , 'send_text_message']);
     Route::get('/seeprofile',[SeeprofileController::class , 'seeprofile']);
-    Route::post('/seeprofile',[SeeprofileController::class , 'UserName_bio_img_change']);
+    ////////////////manageRoom/////////////////
+    Route::get('/manageRoom',[manageRoomController::class , 'show_rooms']);
+    Route::get('/manageRoom/banlist/{room_id}',[manageRoomController::class , 'show_ban_list']);
+    Route::get('/manageRoom/modlist/{room_id}',[manageRoomController::class , 'show_mod_list']);
+    Route::get('/manageRoom/allowedMemmber/{room_id}',[manageRoomController::class , 'show_allowedMember_list']);
+    Route::get('/manageRoom/manageMember/{room_id}',[manageRoomController::class , 'show_manageMember_list']);
+    Route::middleware(manageRoomSecurity::class)->post('/manageRoom/remvoe_room',[manageRoomController::class , 'remvoe_room']);
+    Route::middleware(manageRoomSecurity::class)->post('/manageRoom/remove_ban_mod',[manageRoomController::class , 'remove_ban_mod']);
+    Route::middleware(manageRoomSecurity::class)->post('/manageRoom/warning_member',[manageRoomController::class , 'warning_member']);
+    Route::middleware(manageRoomSecurity::class)->post('/manageRoom/ban_member',[manageRoomController::class , 'ban_member']);
+    Route::middleware(manageRoomSecurity::class)->post('/manageRoom/accept_denny_refresh_member',[manageRoomController::class , 'accept_denny_refresh_member']);
+    ////////////////manageRoom/////////////////
     Route::post('/get_member_profile_and_detail',[Profile::class , 'get_members_profile_info_with_peer_id']);
     ////////////////MeetingRoom/////////////////
     Route::prefix('/mR')->group(function () {

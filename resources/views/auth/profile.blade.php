@@ -14,7 +14,7 @@
                         <i class="bi bi-person-circle"></i>
                     </div>
                     <div class="col">
-                        Public manage
+                        Public info
                     </div>
                 </div>
             </a>
@@ -24,13 +24,13 @@
                         <i class="bi bi-person-circle"></i>
                     </div>
                     <div class="col">
-                        Room manage
+                        Room info
                     </div>
                 </div>
             </a>
         </ul>
     </div>
-    <div class="col mx-auto">
+    <div class="col mx-auto rounded" style="max-height: 85vh">
         <div class="w-100 h-100 my-3" id="profile">
             <div class="card bg-dark text-light">
                 <div class="p-1 m-2 border-0 text-center">
@@ -64,7 +64,11 @@
                 </div>
             </div>
         </div>
-        <div class="w-100 h-100 my-3 d-none" id="rooms">
+        <div class="w-100 h-100 my-3 overflow-y-auto d-none" id="rooms" style="max-height: 100%;">
+            @if (count($room_ids) == 0)
+                <h1 class="w-100 text-center text-light"> You have no room</h1>
+                <p class="w-100 text-light text-center">You can make it <a href="/mR/create">here</a></p>
+            @endif
             @for ($i = 0; $i < count($room_ids); $i++)
                 <div class="card bg-dark mb-2 text-light">
                     <div class="p-1 m-2 border-0">

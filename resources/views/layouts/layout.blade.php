@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<?php
+$t_error="";
+if ($errors->any()) {
+    $errors_detail = $errors->get('*');
+    $errors_key = array_keys($errors_detail);
+    $t_error = 'show_notification("warning","'.$errors_key[0].'","'.$errors_detail[$errors_key[0]][0].'",true);';
+}
+?>
 <head>
     @vite(['resources/sass/app.scss'])
     <meta charset="UTF-8">
@@ -27,43 +34,32 @@
         }
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
+            -webkit-appearance: none;
+            margin: 0;
         }
         
         /* Firefox */
         input[type=number] {
-          -moz-appearance: textfield;
+            -moz-appearance: textfield;
         }
     </style>
     <title>{{$title}}</title>
 </head>
 <body style="background-color: rgb(0, 0, 0)">
-    <div id="header" class="z-3">
-        @include('layouts.header_nav')
+    <div class="w-100 h-100 position-relative">
+        <div id="header" class="z-3 sticky-top w-100" style="min-height: 10%;height:10%;">
+            @include('layouts.header_nav')
+        </div>
+        <div id="main" style="min-height: 90%;height: 90%;">
+            @yield('content')
+        </div>
     </div>
-    <div id="main">
-        @yield('content')
-    </div>
-    {{-- <div id="footer" class="z-3">
-        <footer>
-            <ul class="nav justify-content-center w-100">
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Features</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Pricing</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">FAQs</a></li>
-                <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">About</a></li>
-            </ul>
-            <div class="row align-items-center p-0 m-0">
-                <div class="col border-bottom"></div>
-                <div class="col-1 fw-bold text-center "><i class="bi bi-airplane-fill" style="font-size:70px;"></i></div>
-                <div class="col border-bottom"></div>
-            </div>
-            <p class="text-center text-body-secondary">© 2023 Company, Inc</p>
-        </footer>
-    </div> --}}
     <div id="toasts_div"></div>
     @vite(['resources/js/homepage.js','resources/js/bootstrap.js','resources/js/notification_Toasts.js'])
-
 </body>
+<script>
+    window.addEventListener("load",()=>{
+        {!! $t_error !!}
+    })
+</script>
 </html>

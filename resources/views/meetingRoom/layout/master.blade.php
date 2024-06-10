@@ -2,21 +2,9 @@
 <html lang="en">
     @php
         use App\Models\Rooms;
-        $server_path = 'http://'. $_SERVER['SERVER_NAME'] . ":" . $_SERVER['SERVER_PORT'] ."/mR";
-        $user_hash_id = auth()->user()->UserName."_".auth()->user()->hashtag."_".auth()->id();
+        $user_hash_id = auth()->user()->UserName."_".auth()->id();
         $user_token = password_hash($user_hash_id,PASSWORD_DEFAULT);
-        $members_get = (Rooms::where('room_uuid',$roomUUID)->get())[0]->Members;
-        $members_get = explode(',',$members_get);
-        $members_connected="";
-        for ($i=0; $i < count($members_get); $i++) { 
-            if ($members_get[$i] != auth()->id()) {
-                if ($members_connected === "") {
-                    $members_connected = $members_get[$i];
-                }else {
-                    $members_connected = $members_connected .",". $members_get[$i];
-                }
-            }
-        }
+        $room_info = Rooms::where('room_uuid',$roomUUID)->get();
         $am_i_host;
         if ($Permission === "HOST") {
             $am_i_host = "true";
@@ -39,7 +27,6 @@
         const USER_TOKEN = "{{$user_token}}";
         const IN_ROOM_NAME = "{{$my_custom_name}}";
         const duplicate_detect = "{{$duplicate}}";
-        const MEMBERS_CONNECTED_DB = "{{$members_connected}}";
         const AM_I_HOST = "{{$am_i_host}}";
         const HOST_NAME = "{{$HOST_userName}}";
         const HOST_ID = "{{$HOST_id}}";
@@ -73,7 +60,7 @@
                 bottom:0%;
             }
             100%{
-                bottom:93.5%;
+                bottom:95%;
             }
         }
         @keyframes opacity_change{

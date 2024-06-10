@@ -1,5 +1,32 @@
+<?php
+use App\Models\User;
 
-<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="members_div" style="height: 93%">
+$wait_to_accept = $room_info[0]->wait_to_accept;
+$wait_to_accept_id_array =[];
+$wait_to_accept_userName_array=[];
+
+if ($wait_to_accept != null) {
+    $wait_to_accept_id_array = explode(",",$wait_to_accept);
+    for ($i=0; $i < count($wait_to_accept_id_array); $i++) { 
+        $user_name = User::where('id',$wait_to_accept_id_array[$i])->get('userName')[0]->userName;
+        $wait_to_accept_userName_array[$wait_to_accept_id_array[$i]] = $user_name;
+    }
+}
+
+$deny_m = $room_info[0]->deny_m;
+$deny_m_id_array =[];
+$deny_m_userName_array=[];
+if ($deny_m != null) {
+    $deny_m_id_array = explode(",",$deny_m);
+    for ($i=0; $i < count($deny_m_id_array); $i++) { 
+        $user_name = User::where('id',$deny_m_id_array[$i])->get('userName')[0]->userName;
+        $deny_m_userName_array[$deny_m_id_array[$i]] = $user_name;
+    }
+}
+
+?>
+
+<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="members_div" style="height: 95%">
     <div class="w-100 bg-dark">
         <button class="btn btn-dark w-100 fs-2" sidebar_detail="members" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
     </div>
@@ -9,7 +36,7 @@
         <div id="members_info"></div>
     </div>
 </div>
-<div class="w-100 bg-dark position-absolute bottom-0 d-none border border-1 border-light" id="chatmessage_div" style="height: 93%">
+<div class="w-100 bg-dark position-absolute bottom-0 d-none border border-1 border-light" id="chatmessage_div" style="height: 95%">
     <div class="w-100 bg-dark">
         <button class="btn btn-dark w-100 fs-2" sidebar_detail="chatmessage" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
     </div>
@@ -66,7 +93,7 @@
     </div>
 </div>
 
-<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="announcement_div" style="height: 93%;max-width:100%">
+<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="announcement_div" style="height: 95%;max-width:100%">
     <div class="w-100 h-100 position-relative">
         <div class="w-100 bg-dark" style="max-height: 5%;">
             <button class="btn btn-dark w-100 fs-2" sidebar_detail="announcement" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
@@ -109,6 +136,40 @@
         @endif
     </div>
 </div>
+<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="private_div" style="height: 95%">
+    <div class="w-100 bg-dark">
+        <button class="btn btn-dark w-100 fs-2" sidebar_detail="private" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
+    </div>
+    <div class="w-100">
+        <div class="w-100"><button class="btn btn-outline-light w-100 rounded-0" id="refresh_wait_accept_list"><i class="bi bi-arrow-clockwise"></i></button></div>
+        <div class="w-100 h-100">
+            <div class="h-100 p-0 m-0">
+                <div class="w-100 h-100 mt-3 p-0 m-0">
+                    <div class="text-center">
+                        <p>Wait to accept request</p>
+                    </div>
+                    <div class="rounded-0 border border-1 border-info" style="max-height: 85%;min-height:85%;height:85%;" >
+                        <div class="overflow-y-auto row row-cols-1 p-0 m-0 " style="max-height: 100%" id="wait_to_accept_list">
+                            @for ($i = 0; $i < count($wait_to_accept_id_array); $i++)
+                            <div class="col mt-3 card bg-dark text-light border-light p-0 m-0" id="{{ $wait_to_accept_id_array[$i] }}_wait_accept">
+                                <div class="card-header d-flex flex-column text-center">
+                                    {{ $wait_to_accept_userName_array[$wait_to_accept_id_array[$i]] }}
+                                    <small class="text-secondary">{{ $wait_to_accept_id_array[$i] }}</small>
+                                </div>
+                                <div class="card-body p-0 m-0">
+                                    <div class="btn-group w-100 h-100 p-0 m-0 rounded-0" role="group">
+                                        <button type="button" class="btn btn-danger"><i class="bi bi-x-lg"></i></button>
+                                        <button type="button" class="btn btn-success"><i class="bi bi-check-lg"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            @endfor
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 

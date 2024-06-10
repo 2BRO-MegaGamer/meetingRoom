@@ -14,7 +14,7 @@
     </div>
     <div class="w-100" style="min-height: 5%;max-height:5%;height:5%;">
         <div class="w-100 h-100">
-            <div class="col-lg-4 col-md-4 h-100 m-auto">
+            <div class="col-lg-4 col-md-6 h-100 m-auto">
                 <div class="row p-0 m-0 h-100" style="background: rgba(0, 0, 0, 0.267)">
                     <button use_WMSR="webcam" class="btn col text-light fs-4"><i class="bi bi-camera-video"></i></button>
                     <button use_WMSR="audio" class="btn col text-light fs-4" id="use_mic_btn" mute="true"><i class="bi bi-mic-mute"></i></button>
