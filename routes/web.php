@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\inRoomController;
 use App\Http\Controllers\MeetingRoomController;
 use App\Http\Controllers\PhoneVerificationController;
+use App\Http\Controllers\python\PythonController;
 use App\Http\Middleware\HOST_MODS_cando;
 use App\Http\Middleware\manageRoomSecurity;
 use App\Http\Middleware\meatingRoomSecurity;
@@ -23,6 +24,33 @@ Route::prefix('administrator')->group(function (){
     Route::get('/{serverID}', [administrator_panel::class, 'view_dashboard']);
 });
 Route::middleware('auth')->group(function () {
+    Route::get('/python',[PythonController::class , 'select_job']);
+    Route::prefix('python/voice_to_text')->group(function () {
+        Route::get('/',[PythonController::class , 'show_voice_to_text_form']);
+        Route::post('/',[PythonController::class , 'voice_to_text_create_python_file']);
+        Route::post('/run_python_file',[PythonController::class , 'voice_to_text_run_python_file']);
+        Route::post('/get_result',[PythonController::class , 'voice_to_text_result_txt']);
+    });
+    Route::prefix('python/convert_file')->group(function () {
+        Route::get('/',[PythonController::class , 'show_convert_file_form']);
+        Route::post('/upload_file',[PythonController::class , 'convert_file_upload']);
+        Route::post('/',[PythonController::class , 'convert_file_create_python_file']);
+        Route::post('/run_python_file',[PythonController::class , 'convert_file_run_python_file']);
+        Route::get('file/{path}',[PythonController::class , 'convert_file_download']);
+    });
+    Route::prefix('python/reduce_noise')->group(function () {
+        Route::get('/',[PythonController::class , 'show_reduce_noise_form']);
+        Route::post('/',[PythonController::class , 'reduce_noise_create_python_file']);
+        Route::post('/run_python_file',[PythonController::class , 'reduce_noise_run_python_file']);
+        Route::get('file/{path}',[PythonController::class , 'reduce_noise_download']);
+    });
+    Route::prefix('python/volume_changer')->group(function () {
+        Route::get('/',[PythonController::class , 'show_volume_changer_form']);
+        Route::post('/',[PythonController::class , 'volume_changer_create_python_file']);
+        Route::post('/run_python_file',[PythonController::class , 'volume_changer_run_python_file']);
+        Route::get('file/{path}',[PythonController::class , 'volume_changer_download']);
+    });
+
     Route::get('/phone/verify',[PhoneVerificationController::class , 'show_verification_form']);
     Route::post('/phone/verify',[PhoneVerificationController::class , 'send_text_message']);
     Route::get('/seeprofile',[SeeprofileController::class , 'seeprofile']);
@@ -68,6 +96,4 @@ Route::middleware('auth')->group(function () {
     });
     ////////////////MeetingRoom/////////////////
 });
-
 Auth::routes(["verify"=>true]);
-
