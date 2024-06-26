@@ -26,8 +26,10 @@ php artisan serve
 peerjs --port 9000
 ```
 
-
-**if you want to use extra option**
+##
+##
+##
+## <p align="center">**if you want to use extra option**</p>
 >[Download FFmpeg](https://www.ffmpeg.org/download.html)
 
 And put it in the following path
