@@ -36,14 +36,14 @@ And put it in the following path
 ```
 /storage/app/python/inaction
 ```
-and
-install python
-we use these python package :
-os
-pydub
-noisereduce
-numpy
-SpeechRecognition
+and <br />
+install python <br />
+we use these python package : <br />
+os <br />
+pydub <br />
+noisereduce <br />
+numpy <br /> 
+SpeechRecognition <br />
 
 you can install them after installing python
 ```
