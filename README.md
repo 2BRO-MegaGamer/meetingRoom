@@ -39,11 +39,11 @@ And put it in the following path
 and <br />
 install python <br /><br /> <br />
 we use these python package : <br />
-    * os <br />
-    * pydub <br />
-    * noisereduce <br />
-    * numpy <br /> 
-    * SpeechRecognition <br />
+* os <br />
+* pydub <br />
+* noisereduce <br />
+* numpy <br /> 
+* SpeechRecognition <br />
 
 you can install them after installing python
 ```
