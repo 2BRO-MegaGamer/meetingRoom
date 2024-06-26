@@ -8,7 +8,7 @@ npm install
 ```
 Then make a copy of the **.env.example** file and then rename it to **.env**
 
-**if you want to use Python**
+**if you want to use Python**\n
 Download FFmpeg
 
 And put it in the following path
