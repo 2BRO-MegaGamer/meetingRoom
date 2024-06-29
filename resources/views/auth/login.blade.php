@@ -41,8 +41,6 @@
         <a href="{{ route('register') }}" class="col btn btn-light my-x" >ثبت نام</a>
     </div>
 </div>
-@vite(['resources/js/auth/login.js'])
-
 @endsection
 
 

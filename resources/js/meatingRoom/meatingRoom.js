@@ -1128,7 +1128,7 @@ function change_sidebar_details(btn,m_c_a) {
         animation_sidebar(percentage);
         document.getElementById("sidebar_report_activity_leave").style.animation = "sidebar_RAL_animation 1.5s forwards";
         setTimeout(()=>{
-            document.getElementById("sidebar_report_activity_leave").style.bottom = "95%";
+            document.getElementById("sidebar_report_activity_leave").style.bottom = "93.5%";
             document.getElementById("sidebar_report_activity_leave").style.animation = "";
             $("#"+m_c_a+"_div").removeClass("d-none");
             document.getElementById(m_c_a+"_div").style.animation = "opacity_change 1s forwards"

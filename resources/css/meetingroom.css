@@ -1,0 +1,72 @@
+*::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;
+}
+*::-webkit-scrollbar
+{
+    width: 6px;
+    background-color: #F5F5F5;
+}
+*::-webkit-scrollbar-thumb
+{
+    background-color: #000000;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#private_div,#announcement_div,#chatmessage_div,#members_div{
+    height: 93.5%;
+}
+#members_info_scroll_style{
+    max-height: 100%;
+}
+#chat_message_scroll_style{
+    max-height: 75%;
+}
+#textarea_for_message_in_room{
+    resize: none;
+}
+#voice_recorder_div{
+    opacity: 0;
+}
+#play_pause_recorded_mic{
+    max-width: fit-content;
+}
+#audio{
+    visibility:hidden;
+}
+#announcement_saver{
+    max-height: 90%;
+    min-height:90%;
+}
+#wait_to_accept_list{
+    max-height: 100%;
+}
+#sidebar_report_activity_leave{
+    bottom: 0%;
+}
+#sidebar_btns{
+    height: 93.5%
+}
+#webcam_or_voice_1{
+    max-height: 100%;
+}
+@keyframes sidebar_RAL_animation{
+    0%{
+        bottom:0%;
+    }
+    100%{
+        bottom:93.5%;
+    }
+}
+@keyframes opacity_change{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}

@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use App\Http\Controllers\MeetingRoomController;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class manageRoomSecurity
@@ -19,7 +18,7 @@ class manageRoomSecurity
     {
         $all_rooms = (new MeetingRoomController)->have_Rooms(auth()->user()->id);
         $return_value = redirect("/");
-        if ($request->ajax()== 1 || $request->ajax() == true) {
+        if ($request->ajax() == true) {
             $return_value = redirect("/false")->with(["message"=>"Request Denied"]);
         }
         for ($i=0; $i < count($all_rooms); $i++) {

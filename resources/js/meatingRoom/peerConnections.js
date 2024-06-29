@@ -1,10 +1,5 @@
-
 export function create_connection_room() {
-    // var peer = new Peer(USER_INFO.USER_ID+"_"+ROOM_INFO.ROOM_ID,{port: 9000, path: '/',debug:3});
-    // var peer = new Peer(USER_ID+"_"+ROOM_ID,{host:"192.168.1.106", port: 9000, path: '/',debug:1});
-    // var peer = new Peer(USER_ID+"_"+ROOM_ID,{host:"192.168.1.104",port: 9000, path: "/myapp",debug:1});
     var peer = new Peer(USER_ID+"_"+ROOM_ID,{host:"192.168.1.103", port: 9000, path: '/',debug:1});
-
     peer.on('open',(id)=>{
         PEER_INFO["NEW_PEER"] =  peer;
         peer.on('call', async function(call) {
@@ -23,12 +18,6 @@ export function create_connection_room() {
         peer.on('connection', function(conn) {
             var peer_id = conn.peer;
             var u_id = peer_id.split("_")[0];
-            // conn.on("open",()=>{
-            //     if (PEER_INFO['CONNECTION'][peer_id] == undefined) {
-            //         PEER_INFO['CONNECTION'] = {};
-            //         PEER_INFO['CONNECTION'][peer_id]=[conn,true];
-            //     }
-            // })
             if (PEER_INFO['CONNECTION'][peer_id] == undefined) {
                 PEER_INFO['CONNECTION'][peer_id] = [];
             }
@@ -44,7 +33,6 @@ export function create_connection_room() {
     })
     permission_todo();
 }
-
 function add_my_media_to_user (call_peer_id) {
     var all_media_name = Object.keys(PEER_INFO.MEDIA_STREAM[0]);
     var peer = PEER_INFO.NEW_PEER;
@@ -61,9 +49,6 @@ function add_my_media_to_user (call_peer_id) {
     })
     console.log("call_peer_id ", call_peer_id);
 }
-
-
-
 function update_call_status (call,metadata_call,call_peer_id) {
     var call_id = call_peer_id.split("_")[0];
     if (call_id == HOST_ID) {
@@ -84,17 +69,6 @@ function update_call_status (call,metadata_call,call_peer_id) {
         $("#"+call_id+"_internet_status").addClass("text-success");
         PEER_INFO["CALL"][call_peer_id]["status"]=true;
         PEER_INFO["CALL"][call_peer_id]["media_stream"][0]={empty:true};
-        // call.on('stream', function(stream) {
-            // if ((PEER_INFO.CALL)[call_peer_id]["media_status"].empty) {
-            //     (PEER_INFO.CALL)[call_peer_id]["media_stream"] = undefined;
-            // }else{
-            //     (PEER_INFO.CALL)[call_peer_id]["media_stream"] = stream;
-            // }
-            // PEER_INFO["CALL"][call_peer_id]["status"]=true;
-            // PEER_INFO["CALL"][call_peer_id]["call"]=call;
-            // user_WMSR_set(call_peer_id);
-            // console.log("STREAM FROM .answer" , call_peer_id, " || ",call , " | | ",PEER_INFO);
-        // });
         add_my_media_to_user(call_peer_id);
     }else{
         call.on('stream', function(stream) {
@@ -110,11 +84,6 @@ function update_call_status (call,metadata_call,call_peer_id) {
     }
     PEER_INFO["CALL"][call_peer_id]["call"][metadata_call]=call;
 }
-
-
-
-
-
 document.querySelectorAll("[use_WMSR]").forEach((btn)=>{
     btn.addEventListener("click",()=>{
         if (!btn.disabled) {
@@ -124,8 +93,6 @@ document.querySelectorAll("[use_WMSR]").forEach((btn)=>{
     });
 })
 async function change_WMSR(WMSR,btn) {
-
-    console.log("  |  change_WMSR  | " , WMSR,btn);
     if ( WMSR == "raisehand") {
         var status = (btn.getAttribute("status")=="true")?true:false;
         (status)?btn.setAttribute("status","false"):btn.setAttribute("status","true");
@@ -330,7 +297,6 @@ function check_conn_connection(conn,send_receive) {
                     }else{
                         $(raisehand_row_statos).addClass("d-none");
                     }
-                    console.log("raisehand_row_statos " , raisehand_row_statos,u_peer_id);
                     break;
                 case "kicked_banned":
                     if (u_id == HOST_ID) {
@@ -342,37 +308,21 @@ function check_conn_connection(conn,send_receive) {
                         location.reload();
                     }
                     break;
-                // case "reconnect_call":
-                //     var call = (PEER_INFO.CALL)[u_peer_id]["call"];
-                //     call.close();
-                //     (PEER_INFO.CALL)[u_peer_id]["call"] = undefined;
-                //     (PEER_INFO.CALL)[u_peer_id]["media_stream"] = [{video:undefined,audio:undefined,webcam:undefined,empty:undefined},'reconnect'];
-                //     create_call_to_user(u_peer_id,true,true);
-                //     console.log("call again to : " ,u_peer_id,call);
-                //     break;
             }
-            console.log('Received', data,Object.keys(data));
         });
         PEER_INFO['CONNECTION'][u_peer_id][1] = true;
-
         create_call_to_user(peer_id,undefined,undefined);
     })
 }
-
 function user_WMSR_set(u_peer_id) {
-    // {video:undefined,audio:undefined,webcam:undefined,empty:undefined}
-    // _switch_wv_prev
     var user_id = u_peer_id.split("_")[0];
     var user_media_status;
-
     if (user_id == USER_ID) {
         user_media_status = PEER_INFO.MEDIA_STREAM;
     }else{
         user_media_status = PEER_INFO.CALL[u_peer_id].media_stream;
     }
     var all_media_status = Object.keys(user_media_status[0]);
-    console.log("all_media_status" ,all_media_status);
-
     all_media_status.forEach((media)=>{
         if (user_media_status[0][media]) {
             if ((document.getElementById(u_peer_id+"_video_tag") == null || document.getElementById(u_peer_id+"_mic_tag")== null || document.getElementById(u_peer_id+"_webcam_tag")== null) && user_id != USER_ID) {
@@ -469,40 +419,9 @@ function user_WMSR_set(u_peer_id) {
                             break;
                     }
                 }
-
             }
         }
     })
-    console.log(user_media_status);
-
-
-
-
-    // if ((PEER_INFO.CALL)[u_peer_id]['media_status'][1].empty) {
-    //     (document.getElementById(u_peer_id+"_video_tag") != null)? (document.getElementById(u_peer_id+"_video_tag").srcObject =  undefined):document.getElementById(u_peer_id+"_video_tag");
-    //     (document.getElementById(u_peer_id+"_mic_tag") != null)? (document.getElementById(u_peer_id+"_mic_tag").srcObject =  undefined):document.getElementById(u_peer_id+"_mic_tag");
-    //     $(("#"+u_peer_id+"_video_div")).addClass("d-none");
-    // }else{
-    //     if (document.getElementById(u_peer_id+"_mic_tag") != null && document.getElementById(u_peer_id+"_video_tag") != null) {
-    //         if ((PEER_INFO.CALL)[u_peer_id]['media_status'].video || (PEER_INFO.CALL)[u_peer_id]['media_status'].webcam) {
-                // document.getElementById(u_peer_id+"_mic_tag").srcObject = undefined;
-                // ////VIDEO ONLY SWITCH WEBCAM | | VIDEO
-                // document.getElementById(u_peer_id+"_video_tag").srcObject = user_media_status[0]['video'];
-                // document.getElementById(u_peer_id+"_video_tag").play();
-                // $(("#"+u_peer_id+"_video_div")).removeClass("d-none");
-    //         }else if((PEER_INFO.CALL)[u_peer_id]['media_status'].audio){
-    //             document.getElementById(u_peer_id+"_video_tag").srcObject = undefined;
-                // document.getElementById(u_peer_id+"_mic_tag").srcObject = user_media_status[0]['audio'];
-                // document.getElementById(u_peer_id+"_mic_tag").play();
-    //             $(("#"+u_peer_id+"_video_div")).addClass("d-none");
-    //         }
-    //         console.log("user_WMSR_set " , u_peer_id , document.getElementById(u_peer_id+"_mic_tag") , (PEER_INFO.CALL)[u_peer_id][0]['media_stream']);
-    //     }else{
-    //         setTimeout(()=>{
-    //             user_WMSR_set(u_peer_id);
-    //         },5000)
-    //     }
-    // }
 }
 
 
@@ -519,11 +438,6 @@ async function get_display_stream() {
             });
             mediaStream["oninactive"] = (()=>{
                 document.querySelector("[use_wmsr=video]").click();
-                console.log("disconnected stream");
-            })
-            mediaStream["onactive"]=(()=>{
-                console.log("stream start");
-
             })
             PEER_INFO["MEDIA_STREAM"][0]["video"]=true;
             PEER_INFO["MEDIA_STREAM"][1]["video"]=mediaStream;
@@ -531,7 +445,6 @@ async function get_display_stream() {
             return mediaStream;
         } catch (ex) {
             resolve(false)
-            console.log("Error occurred", ex);
         }
     })
 
@@ -546,16 +459,10 @@ async function get_voicechat_stream() {
             resolve(stream)
             return stream;
         }, function(err) {
-            console.log('Failed to get local stream' ,err);
             resolve(false)
             return false;
         });
     })
-
-
-
-
-
 }
 
 async function get_webcam_stream() {
@@ -568,15 +475,11 @@ async function get_webcam_stream() {
             return stream;
         }, function(err) {
             resolve(false)
-            console.log('Failed to get local stream' ,err);
             return false;
         });
     })
 }
-
-
 function make_empty_media_stream(media_only) {
-    console.log("created empty");
     const createEmptyAudioTrack = () => {
         const ctx = new AudioContext();
         const oscillator = ctx.createOscillator();
@@ -604,13 +507,6 @@ function make_empty_media_stream(media_only) {
         resolve(empty_audio)
         return empty_audio;
     })
-
-    // else{
-    //     PEER_INFO["MEDIA_STREAM"]=[{video:false,audio:false,webcam:false,empty:true},stream];
-
-    //     local_stream[1] = new MediaStream([audioTrack]);
-    //     return new MediaStream([audioTrack, videoTrack]);
-    // }
 }
 async function create_call_to_user(u_peer_id,overview_created,call_again) {
     if (overview_created != true) {
@@ -618,14 +514,6 @@ async function create_call_to_user(u_peer_id,overview_created,call_again) {
     }else{
         if (document.getElementById(u_peer_id+"_mic_webcam_div") != null) {
             var peer = PEER_INFO.NEW_PEER;
-            console.log("empty media : " , PEER_INFO.MEDIA_STREAM['empty']);
-            // var all_media = Object.keys(PEER_INFO.MEDIA_STREAM[1]);
-            // all_media.forEach(mS => {
-            //     if (PEER_INFO.MEDIA_STREAM[1][mS] != undefined) {
-            //         empty_media[0] = false;
-            //         empty_media[1] = PEER_INFO.MEDIA_STREAM[1][mS];
-            //     }
-            // });
             if (PEER_INFO.MEDIA_STREAM[1]['empty'] == undefined) {
                 await make_empty_media_stream(true);
             }
@@ -650,13 +538,6 @@ async function create_call_to_user(u_peer_id,overview_created,call_again) {
             PEER_INFO["CALL"][u_peer_id]["media_stream"]=[];
             PEER_INFO["CALL"][u_peer_id]["media_stream"][0]={video:false,audio:false,webcam:false,empty:false};
             PEER_INFO["CALL"][u_peer_id]["media_stream"][1]={video:undefined,audio:undefined,webcam:undefined,empty:undefined};
-            // call.on('stream',(stream)=>{
-            //     var metadata =  call.metadata[call.peer];
-            //     PEER_INFO["CALL"][u_peer_id]["status"]=true;
-            //     PEER_INFO["CALL"][u_peer_id]["media_stream"][1][metadata]=true;
-            //     PEER_INFO["CALL"][u_peer_id]["media_stream"][0][metadata]=stream;
-            //     // user_WMSR_set(u_peer_id);
-            // })
             call.on("close",()=>{
                 var u_id = (call.peer).split("_")[0];
                 if (document.getElementById(u_id+"_internet_status") != null) {
@@ -667,10 +548,7 @@ async function create_call_to_user(u_peer_id,overview_created,call_again) {
                 if (document.getElementById(call.peer+"_mic_webcam_div") != null) {
                     document.getElementById(call.peer+"_mic_webcam_div").remove();
                 }
-                
-                console.log("CALL closed by :",call.peer);
             })
-            console.log("create_call_to_user",u_peer_id,overview_created,call_again);
         }
     }
 }
@@ -736,8 +614,6 @@ export function create_btn_permission(id) {
                     action:all_btns[i][1]
                 },
                 success: function(data) {
-                    console.log(data);
-
                     var H_messaeg = "";
                     if (all_btns[i][1] == "kick" || all_btns[i][1] == "ban") {
                         H_messaeg = "kicked_banned";
@@ -779,42 +655,8 @@ export function create_btn_permission(id) {
     }
     return first_div;
 }
-
-// setTimeout(()=>{
-//     for (let i = 0; i < 50; i++) {
-//         create_overview_for_call(("test_"+i),"test");
-//     }
-//     console.log("created");
-// },5000);
-
 function create_overview_for_call(u_peer_id,answer) {
     var u_id = u_peer_id.split("_")[0];
-    // switch (ROOM_PERMISSION) {
-    //     case "HOST":
-    //         modal_option = `
-    //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-    //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-    //         <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
-    //         <button class="btn btn-danger "><i class="bi bi-exclamation-octagon"></i></button>
-    //         <button class="btn btn-dark "><i class="bi bi-person-fill-up"></i></button>
-    //         <button class="btn btn-dark rounded-top-0"><i class="bi bi-person-fill-down"></i></button>
-    //         `;
-    //         break;
-    //     case "MOD":
-    //         modal_option = `
-    //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-    //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-    //         <button class="btn btn-warning"><i class="bi bi-box-arrow-right"></i></button>
-    //         <button class="btn btn-danger rounded-top-0"><i class="bi bi-exclamation-octagon"></i></button>
-    //         `;
-    //         break;
-    //     default:
-    //         modal_option = `
-    //         <button class="btn btn-info rounded-top-0"><i class="bi bi-info-circle"></i></button>
-    //         <button class="btn btn-success"><i class="bi bi-chat-left-dots"></i></button>
-    //         `;
-    //         break;
-    // }
     if (document.getElementById(u_peer_id+"_mic_webcam_div") == null) {
         if (answer != undefined) {
             var base_html = `
@@ -889,7 +731,6 @@ function create_overview_for_call(u_peer_id,answer) {
             </div>
             `;
             document.getElementById("webcam_or_voice_1").innerHTML += base_html;
-            console.log("permission ",document.getElementById(u_id+"_btn_permission").innerHTML == "" , u_id != USER_ID);
             if (document.getElementById(u_id+"_btn_permission").innerHTML == "" && u_id != USER_ID) {
                 var modal_option = create_btn_permission(u_id);
                 document.getElementById(u_id+"_btn_permission").append(modal_option);
@@ -900,9 +741,6 @@ function create_overview_for_call(u_peer_id,answer) {
         }
     }
 }
-
-
-
 function get_members_ids(id) {
     var peer = PEER_INFO.NEW_PEER;
     if (peer.connection == undefined) {
@@ -924,27 +762,5 @@ function get_members_ids(id) {
                 create_connection_everyone(id);
             }
         });
-    }else{
-        console.log(peer.connection);
     }
 }
-function permission_todo() {
-
-}
-
-
-// const conn =peer.connect("");
-// conn.on('open', function() {
-//     conn.on('data', function(data) {
-//         console.log('Received', data);
-//     });
-//     conn.send('Hello!');
-// });
-// var y = 109;
-// setInterval(()=>{
-//     if (y < 315) {
-//         var text  = "/fill -73 "+y+" 95 -66 "+y+" 103 farmland";
-//         navigator.clipboard.writeText(text);
-//         y+=5;
-//     }
-// },1000)

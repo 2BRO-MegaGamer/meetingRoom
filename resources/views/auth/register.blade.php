@@ -3,7 +3,6 @@
     $title = 'Register';
 @endphp
 @section('content')
-
 <div class="mx-auto rounded-top py-1 my-4 w-100"  style="max-width: 600px; background:{{env("BG_COLOR", "#7CCFBC")}};border-bottom-left-radius: 10%;border-bottom-right-radius: 10%;">
     <form class="p-3 text-light " action="{{ route('register') }}" method="POST" id="form_singup" style="">
         @csrf
@@ -58,26 +57,29 @@
 @php
     $t_error = '';
     if ($errors->any()) {
+        $t_error = 'window.addEventListener("load",()=>{show_hide_error_messages(';
 
         $errors_detail = $errors->get('*');
         $errors_key = array_keys($errors_detail);
-
         switch ($errors_key[0]) {
             case 'userName':
-                $t_error = 'window.addEventListener("load",()=>{show_hide_error_messages("username_not_uniqe")})';
+                $t_error = $t_error . '"username_not_uniqe"';
                 break;
             case 'email':
-                $t_error = 'window.addEventListener("load",()=>{show_hide_error_messages("email_not_uniqe")})';
+                $t_error = $t_error . '"email_not_uniqe"';
                 break;
             case 'phone_number':
-                $t_error = 'window.addEventListener("load",()=>{show_hide_error_messages("phone_not_uniqe")})';
+                $t_error = $t_error . '"phone_not_uniqe"';
                 break;
+        }
+        $t_error = $t_error.")})";
+        if ($t_error == 'window.addEventListener("load",()=>{show_hide_error_messages()})') {
+            $t_error = "";
         }
     }
 @endphp
 <script type="text/javascript" defer>
     function show_hide_error_messages(error_message) {
-        console.log(error_message);
         var error_messages_info = {
             email_not_valid : 'ایمیلتان معتبر نیست',
             email_not_uniqe : 'ایمیلتان تکراری است',
@@ -89,8 +91,7 @@
         }
         show_notification("warning",(error_message.replaceAll("_"," ")),error_messages_info[error_message],false)
     }
-    {!! $t_error !!}
-
+    {!! $t_error!!}
 </script>
 @vite(['resources/js/auth/register.js'])
 @endsection

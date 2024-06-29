@@ -26,30 +26,30 @@ if ($deny_m != null) {
 
 ?>
 
-<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="members_div" style="height: 95%">
+<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="members_div">
     <div class="w-100 bg-dark">
         <button class="btn btn-dark w-100 fs-2" sidebar_detail="members" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
     </div>
-    <div id="members_info_scroll_style" class="list-group overflow-auto rounded-0 w-100 h-100"  style="max-height: 100%;">
+    <div id="members_info_scroll_style" class="list-group overflow-auto rounded-0 w-100 h-100">
         <div id="hosts_info"></div>
         <div id="mods_info"></div>
         <div id="members_info"></div>
     </div>
 </div>
-<div class="w-100 bg-dark position-absolute bottom-0 d-none border border-1 border-light" id="chatmessage_div" style="height: 95%">
+<div class="w-100 bg-dark position-absolute bottom-0 d-none border border-1 border-light" id="chatmessage_div">
     <div class="w-100 bg-dark">
         <button class="btn btn-dark w-100 fs-2" sidebar_detail="chatmessage" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
     </div>
-    <div id="chat_message_scroll_style" class="overflow-auto" style="max-height: 75%;">
+    <div id="chat_message_scroll_style" class="overflow-auto">
         <div class="d-block" id="message_save_in_room">
         </div>
     </div>
     <div class="position-absolute bottom-0 w-100" style="height: 20%;">
         <div class="h-100">
-            <form method="post" class="position-relative" id="C_M_M_form" enctype="multipart/form-data">
+            <form method="post" class="position-relative" id="C_M_M_form">
                 @csrf
                 <div class="form-floating " style="height: 68%">
-                    <textarea id="textarea_for_message_in_room" class="form-control h-100 rounded-0 " style="resize: none;"></textarea>
+                    <textarea id="textarea_for_message_in_room" class="form-control h-100 rounded-0 " ></textarea>
                     <label for="textarea_for_message_in_room">Message</label>
                 </div>
                 <div style="height: 32%">
@@ -66,7 +66,7 @@ if ($deny_m != null) {
                         </div>
                     </div>
                 </div>
-                <div class="w-100 h-100 position-absolute bg-dark z-3 bottom-0 start-0 d-none" style="opacity: 0;" id="voice_recorder_div">
+                <div class="w-100 h-100 position-absolute bg-dark z-3 bottom-0 start-0 d-none" id="voice_recorder_div">
                     <div class="w-100">
                         <button class="btn btn-dark text-light w-100" id="revers_voice_recorder"><i class="bi bi-arrow-down"></i></button>
                     </div>
@@ -76,8 +76,8 @@ if ($deny_m != null) {
                                 <button class="btn w-100 h-100 btn-outline-light rounded-3" id="start_holding_recording_mic"><i class="bi bi-mic-fill"></i></button>
                             </div>
                             <div class="col row w-100 m-auto">
-                                <div class="col text-center m-auto fs-4 d-none" style="max-width: fit-content" id="play_pause_recorded_mic">
-                                    <audio class="w-0 h-0 d-none opacity-0 " style="visibility:hidden;" id="audio" ></audio>
+                                <div class="col text-center m-auto fs-4 d-none" id="play_pause_recorded_mic">
+                                    <audio class="w-0 h-0 d-none opacity-0 " id="audio" ></audio>
                                     <button class="btn btn-outline-light" id="play_pause" is_played="false" ><i class="bi bi-play-fill"></i></button>
                                 </div>
                                 <div class="col text-center m-auto fs-4" id="timer_recorder_mic">
@@ -93,12 +93,12 @@ if ($deny_m != null) {
     </div>
 </div>
 
-<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="announcement_div" style="height: 95%;max-width:100%">
+<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="announcement_div">
     <div class="w-100 h-100 position-relative">
         <div class="w-100 bg-dark" style="max-height: 5%;">
             <button class="btn btn-dark w-100 fs-2" sidebar_detail="announcement" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
         </div>
-        <div class="overflow-y-auto w-100 h-100" style="max-height: 90%;min-height:90%;" id="announcement_saver">
+        <div class="overflow-y-auto w-100 h-100"  id="announcement_saver">
         </div>
         @if ($am_i_host == "true")
             <div class="w-100 h-100" style="max-height: 5%;">
@@ -136,7 +136,7 @@ if ($deny_m != null) {
         @endif
     </div>
 </div>
-<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="private_div" style="height: 95%">
+<div class="w-100 position-absolute bottom-0 d-none border border-1 border-light" id="private_div">
     <div class="w-100 bg-dark">
         <button class="btn btn-dark w-100 fs-2" sidebar_detail="private" id="sidebar_showbtn"><i class="bi bi-arrow-down"></i></button>
     </div>
@@ -149,7 +149,7 @@ if ($deny_m != null) {
                         <p>Wait to accept request</p>
                     </div>
                     <div class="rounded-0 border border-1 border-info" style="max-height: 85%;min-height:85%;height:85%;" >
-                        <div class="overflow-y-auto row row-cols-1 p-0 m-0 " style="max-height: 100%" id="wait_to_accept_list">
+                        <div class="overflow-y-auto row row-cols-1 p-0 m-0 " id="wait_to_accept_list">
                             @for ($i = 0; $i < count($wait_to_accept_id_array); $i++)
                             <div class="col mt-3 card bg-dark text-light border-light p-0 m-0" id="{{ $wait_to_accept_id_array[$i] }}_wait_accept">
                                 <div class="card-header d-flex flex-column text-center">

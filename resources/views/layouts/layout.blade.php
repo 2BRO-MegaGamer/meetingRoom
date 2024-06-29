@@ -5,7 +5,7 @@ $t_error="";
 if ($errors->any()) {
     $errors_detail = $errors->get('*');
     $errors_key = array_keys($errors_detail);
-    $t_error = 'show_notification("warning","'.$errors_key[0].'","'.$errors_detail[$errors_key[0]][0].'",true);';
+    $t_error = 'window.addEventListener("load",()=>{show_notification("warning","'.$errors_key[0].'","'.$errors_detail[$errors_key[0]][0].'",true)});';
 }
 ?>
 <head>
@@ -50,16 +50,12 @@ if ($errors->any()) {
         <div id="header" class="z-3 sticky-top w-100" style="min-height: 10%;height:10%;">
             @include('layouts.header_nav')
         </div>
-        <div id="main" style="min-height: 90%;height: 90%;">
+        <div id="main" style="min-height: 90%;height: 90vh;">
             @yield('content')
         </div>
     </div>
     <div id="toasts_div"></div>
     @vite(['resources/js/homepage.js','resources/js/bootstrap.js','resources/js/notification_Toasts.js'])
 </body>
-<script>
-    window.addEventListener("load",()=>{
-        {!! $t_error !!}
-    })
-</script>
+<script>{!! $t_error !!}</script>
 </html>

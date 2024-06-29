@@ -1,4 +1,3 @@
-
 function submit_check_errors(username_check,email_check,phone_check) {
     document.getElementById("logbtn_submit_singup").disabled = true;
     const firstname_singup =document.getElementById("firstname_singup");
@@ -19,7 +18,6 @@ function submit_check_errors(username_check,email_check,phone_check) {
     }));
     have_value.forEach((val_inp=>{
         if (val_inp.id == "firstname_singup" || val_inp.id == "lastname_singup" || val_inp.id == "username_singup") {
-            console.log("test lenght ",(val_inp.value).length > 64);
             if ((val_inp.value).length > 64) {
                 $(val_inp).addClass("border border-2 border-danger");
                 error++;
@@ -80,16 +78,14 @@ function submit_check_errors(username_check,email_check,phone_check) {
         }
     }
 }
-
 function email_reg_test(val_inp) {
-    const emailMessage = document.getElementById('email_singup_error');
     const regexTest = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(val_inp.value);
     if (!regexTest) {
         show_hide_error_messages("email_not_valid")
         return true;
     }else{
-        if (val_inp.getAttribute("class").split("border border-2 border-danger").length > 1) {
-            val_inp.setAttribute("class",val_inp.getAttribute("class").split("border border-2 border-danger")[0]);
+        if ((val_inp.getAttribute("class")).search("border border-2 border-danger") != -1) {
+            $(val_inp).removeClass("border border-2 border-danger")
         }
         return false;
     }
@@ -104,9 +100,8 @@ function username_reg_test(val_inp) {
 }
 
 function check_0_password(val_inp) {
-    const passwordMessage = document.getElementById('password_0_singup_error');
     if ( (val_inp.value).length < 8 ) {
-        val_inp.setAttribute("class",(val_inp.getAttribute("class") + " border border-2 border-danger"));
+        $(val_inp).addClass("border border-2 border-danger")
         show_hide_error_messages("password_not_enough")
         return true;
     }else{
@@ -117,7 +112,6 @@ function check_0_password(val_inp) {
 
 
 function check_both_password(val_inp,pass_input_0) {
-    const passwordMessage = document.getElementById('password_1_singup_error');
     if (val_inp.value != pass_input_0.value) {
         show_hide_error_messages("password_not_same")
         return true;
@@ -126,7 +120,6 @@ function check_both_password(val_inp,pass_input_0) {
     }
 }
 function check_phone_num(val_inp) {
-    const phone_message = document.getElementById('phone_number_error');
     const regexTest_phone_number = /09(1[0-9]|3[1-9]|2[1-9])-?[0-9]{3}-?[0-9]{4}/.test(val_inp.value);
     if (!regexTest_phone_number) {
         show_hide_error_messages("phone_not_valid")
@@ -152,7 +145,6 @@ function check_if_unique(val_inp) {
         }
     });
 }
-document.getElementById("phone_number").addEventListener("input",(e)=>{style_for_phone_number(e,document.getElementById("phone_number"));})
 function style_for_phone_number(e,element) {
     var test_regex_number_only = /^[0-9]*$/.test(e.data);
     if (test_regex_number_only === false) {

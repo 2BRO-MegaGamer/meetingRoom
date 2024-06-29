@@ -2,7 +2,6 @@
 @php
     $title = 'profile';
     $room_ids = array_keys($room_detail);
-    // dd($user_information);
 @endphp
 @section('content')
 <div class="row w-100 m-0 p-0 mt-3">

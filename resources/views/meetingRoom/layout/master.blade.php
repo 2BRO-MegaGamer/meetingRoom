@@ -13,7 +13,7 @@
         }
     @endphp
 <head>
-    @vite(['resources/sass/app.scss'])
+    @vite(['resources/sass/app.scss','resources/css/meetingroom.css'])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -36,41 +36,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <title>{{$roomID}}</title>
     <style id="dynamic_animation">
-        *::-webkit-scrollbar-track
-        {
-            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-            background-color: #F5F5F5;
-        }
-        *::-webkit-scrollbar
-        {
-            width: 6px;
-            background-color: #F5F5F5;
-        }
-        *::-webkit-scrollbar-thumb
-        {
-            background-color: #000000;
-        }
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        @keyframes sidebar_RAL_animation{
-            0%{
-                bottom:0%;
-            }
-            100%{
-                bottom:95%;
-            }
-        }
-        @keyframes opacity_change{
-            0%{
-                opacity: 0;
-            }
-            100%{
-                opacity: 1;
-            }
-        }
+
     </style>
     <audio class="d-none opacity-0 w-0 h-0" id="notification_audio" src="{{asset('audio/notification.mp3')}}"></audio>
 </head>
@@ -111,7 +77,6 @@
                         @include('meetingRoom.room_details.sidebar')
                     </div>
                 </div>
-                {{-- col-xxl-3 col-xl-3 col-md-4 col-sm-6 col-xs-6 col-7 --}}
             </div>
         </div>
     </div>
@@ -123,7 +88,13 @@
         }
     </style>
 </body>
-{{-- <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script> --}}
+<?php
+$isMob = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "mobile")); 
+
+if($isMob && $am_i_host == "true"){ 
+    echo '<script src="//cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>'; 
+}
+?>
+
 
 </html>
