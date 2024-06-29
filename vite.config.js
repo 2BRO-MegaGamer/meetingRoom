@@ -16,7 +16,7 @@ export default defineConfig({
                 'resources/js/auth/phone_verification.js',
                 'resources/js/python/voice_to_speach_form.js',
                 'resources/js/python/reduce_noise.js',
-                'resources/js/python/convert_file.blade.js',
+                'resources/js/python/convert_file.js',
             ],
             refresh: true,
         }),
